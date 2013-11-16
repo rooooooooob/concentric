@@ -24,7 +24,7 @@ struct PlayerConfig
 
 
 	Sword sword;
-	Thrown Thrown;
+	Thrown thrown;
 	Type type;
 };
 
