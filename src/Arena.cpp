@@ -1,4 +1,5 @@
 #include "Arena.hpp"
+#include "Game.hpp"
 
 #include <cstdlib>
 #include "Game.hpp"
@@ -9,8 +10,11 @@ namespace con
 {
 
 Arena::Arena(je::Game *game)
-	:je::Level(game, 640, 480)
+	:je::Level(game, 640, 480),
+	w(sf::Vector2f (0, 0), sf::Vector2f (300, 300), this),
+	controller (this->getGame().getInput())
 {
+<<<<<<< HEAD
 	for (int i = 0; i < 640; i += 32)
     {
         for (int j = 1; j < 4; ++j)
@@ -19,11 +23,14 @@ Arena::Arena(je::Game *game)
         grass->setDepth(-10);
         addEntity(grass);
     }
+=======
+
+>>>>>>> 1a16a5271d4b97cdd78dd7676178ec748bd93e74
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const
 {
-
+    w.draw (target);
 }
 
 void Arena::onUpdate()
@@ -32,7 +39,6 @@ void Arena::onUpdate()
 
 void Arena::onDraw(sf::RenderTarget& target) const
 {
-
 }
 
 void Arena::loadEntities(const std::string& layerName, const std::vector<EntityPrototype>& prototypes)

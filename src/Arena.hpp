@@ -2,6 +2,9 @@
 #define CON_ARNEA_HPP
 
 #include "Level.hpp"
+#include "Input.hpp"
+#include "Window.hpp"
+#include "Controller.hpp"
 
 namespace con
 {
@@ -21,6 +24,8 @@ private:
 	void loadEntities(const std::string& layerName, const std::vector<EntityPrototype>& prototypes) override;
 
 	void createTiles(const std::string& filename, int tileWidth, int tileHeight, int tilesAcross, int tilesHigh) override;
+
+	je::Controller controller;
 
 	void transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles) override;
 };
