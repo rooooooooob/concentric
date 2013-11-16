@@ -6,6 +6,10 @@ namespace con
 Arena::Arena(je::Game *game)
 	:je::Level(game, 640, 480)
 {
+	for (int i = 0; i < 640; i += 32)
+	{
+
+	}
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const
@@ -15,10 +19,9 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 
 void Arena::onUpdate()
 {
-
 }
 
-void Arena::onDraw() const
+void Arena::onDraw(sf::RenderTarget& target) const
 {
 
 }
