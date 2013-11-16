@@ -14,23 +14,20 @@ class Arena : public je::Level
 public:
 	Arena(je::Game * game);
 
-	void drawGUI(sf::RenderTarget& target) const;
+	void drawGUI(sf::RenderTarget& target) const override;
 
 private:
 	void onUpdate();
 
-	void onDraw() const;
+	void onDraw(sf::RenderTarget& target) const override;
 
-	void loadEntities(const std::string& layerName, const std::vector<EntityPrototype>& prototypes);
+	void loadEntities(const std::string& layerName, const std::vector<EntityPrototype>& prototypes) override;
 
-	void createTiles(const std::string& filename, int tileWidth, int tileHeight, int tilesAcross, int tilesHigh);
-
-	void transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles);
-
-	Window w;
+	void createTiles(const std::string& filename, int tileWidth, int tileHeight, int tilesAcross, int tilesHigh) override;
 
 	je::Controller controller;
 
+	void transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles) override;
 };
 
 }
