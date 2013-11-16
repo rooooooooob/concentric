@@ -2,13 +2,10 @@
 #define CON_WINDOW_HPP
 
 #include <vector>
-#include <SFML/Graphics.hpp>
 #include "Button.hpp"
 
 namespace con
 {
-
-class Button;
 
 class Window
 {
