@@ -4,8 +4,8 @@
 
 int main()
 {
-	je::Game game(640, 480, 60);
-	game.getTexManager().setPath("concentric/img/");
+	je::Game game(640, 480, 6);
+	game.getTexManager().setPath("concentric/resources/img/");
 	game.setLevel(new con::Arena(&game));
     return game.execute();
 }

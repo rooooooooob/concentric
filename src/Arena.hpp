@@ -14,7 +14,7 @@ public:
 	void drawGUI(sf::RenderTarget& target) const override;
 
 private:
-	void onUpdate();
+	void onUpdate() override;
 
 	void onDraw(sf::RenderTarget& target) const override;
 
