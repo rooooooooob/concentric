@@ -24,6 +24,7 @@ private:
 	std::string currentAnimation;
 	std::map<std::string, std::unique_ptr<je::Animation> > animations;
 	je::Controller input;
+	float gravity;
 };
 
 }

@@ -34,12 +34,16 @@ Arena::Arena(je::Game *game)
 	};
 
 	je::Controller p1controls(getGame().getInput(), 0);
+	p1controls.addKeybind("jump", je::Controller::Bind(4));
+	p1controls.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
+	p1controls.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
+	p1controls.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
 
 	addEntity(new Player(this, getWidth() / 2, getHeight() / 2, 0, p1config, p1controls));
 
 
 	//	set up background gradient
-	bgVertices[0].color = bgVertices[1].color = sf::Color(15, 36, 47);
+	bgVertices[0].color = bgVertices[1].color = sf::Color(11, 26, 34);
 	bgVertices[2].color = bgVertices[3].color = sf::Color(31, 75, 95);
 	bgVertices[0].position = sf::Vector2f(0, 0);
 	bgVertices[1].position = sf::Vector2f(getWidth(), 0);
