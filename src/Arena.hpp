@@ -25,8 +25,6 @@ private:
 
 	void createTiles(const std::string& filename, int tileWidth, int tileHeight, int tilesAcross, int tilesHigh) override;
 
-	je::Controller controller;
-
 	void transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles) override;
 };
 

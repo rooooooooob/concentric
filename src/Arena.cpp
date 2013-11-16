@@ -10,27 +10,22 @@ namespace con
 {
 
 Arena::Arena(je::Game *game)
-	:je::Level(game, 640, 480),
-	w(sf::Vector2f (0, 0), sf::Vector2f (300, 300), this),
-	controller (this->getGame().getInput())
+	:je::Level(game, 640, 480)
 {
-<<<<<<< HEAD
+	this->setCameraBounds(sf::Rect<int>(0, 0, 640, 480));
+	this->setCameraPosition(sf::Vector2f(320, 240));
 	for (int i = 0; i < 640; i += 32)
-    {
-        for (int j = 1; j < 4; ++j)
-            addEntity(new SolidGround(this, i, 480 - j * 32, sf::Rect<int>(i, 480 - j * 32, 32, 32), "dirt.png"));
-        Scenery *grass = new Scenery(this, i, 480 - 3 * 32 - 6, (rand() % 2 ? "grass0.png" : "grass1.png"));
-        grass->setDepth(-10);
-        addEntity(grass);
-    }
-=======
-
->>>>>>> 1a16a5271d4b97cdd78dd7676178ec748bd93e74
+	{
+		for (int j = 1; j < 4; ++j)
+			addEntity(new SolidGround(this, i, 480 - j * 32, sf::Rect<int>(i, 480 - j * 32, 32, 32), "dirt.png"));
+		Scenery *grass = new Scenery(this, i, 480 - 3 * 32 - 6, (rand() % 2 ? "grass0.png" : "grass1.png"));
+		grass->setDepth(-10);
+		addEntity(grass);
+	}
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const
 {
-    w.draw (target);
 }
 
 void Arena::onUpdate()
