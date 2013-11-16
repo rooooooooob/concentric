@@ -2,6 +2,9 @@
 #define CON_ARNEA_HPP
 
 #include "Level.hpp"
+#include "Input.hpp"
+#include "Window.hpp"
+#include "Controller.hpp"
 
 namespace con
 {
@@ -23,6 +26,10 @@ private:
 	void createTiles(const std::string& filename, int tileWidth, int tileHeight, int tilesAcross, int tilesHigh);
 
 	void transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles);
+
+	Window w;
+
+	je::Controller controller;
 
 };
 
