@@ -16,8 +16,6 @@ namespace con
 Arena::Arena(je::Game *game)
 	:je::Level(game, 640, 480)
 {
-	this->setCameraBounds(sf::Rect<int>(0, 0, getWidth(), getHeight()));
-	this->setCameraPosition(sf::Vector2f(getWidth() / 2, getHeight() / 2));
 	for (int i = 0; i < getWidth(); i += 32)
 	{
 		for (int j = 1; j < 4; ++j)
@@ -38,6 +36,21 @@ Arena::Arena(je::Game *game)
 	p1controls.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
 	p1controls.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
 	p1controls.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
+	p1controls.addKeybind("swing", je::Controller::Bind(sf::Joystick::Axis::Z, true));
+	p1controls.addKeybind("throw", je::Controller::Bind(5));
+	p1controls.addKeybind("L2", je::Controller::Bind(sf::Joystick::Axis::Z));
+	p1controls.addKeybind("dpadup", je::Controller::Bind(sf::Joystick::Axis::PovX));
+	p1controls.addKeybind("dpaddown", je::Controller::Bind(sf::Joystick::Axis::PovX, true));
+	p1controls.addKeybind("dpadright", je::Controller::Bind(sf::Joystick::Axis::PovY));
+	p1controls.addKeybind("dpadleft", je::Controller::Bind(sf::Joystick::Axis::PovY, true));
+	// axis = R = up to down
+	// axis = U = left to right
+	p1controls.addKeybind("A", je::Controller::Bind(0));
+	p1controls.addKeybind("B", je::Controller::Bind(1));
+	p1controls.addKeybind("X", je::Controller::Bind(2));
+	p1controls.addKeybind("Y", je::Controller::Bind(3));
+	//left joy in = 8, right = 9
+	//select 6 start 7
 
 	addEntity(new Player(this, getWidth() / 2, getHeight() / 2, 0, p1config, p1controls));
 

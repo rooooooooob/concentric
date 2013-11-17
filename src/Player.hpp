@@ -15,7 +15,14 @@ namespace con
 class Player : public je::Entity
 {
 public:
+	enum Facing
+	{
+		Left = -1,
+		Right = 1
+	};
 	Player(je::Level *level, int x, int y, int team, const PlayerConfig& config, const je::Controller& controller);
+
+	Facing getFacing() const;
 private:
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states = sf::RenderStates::Default) const override;
 
@@ -23,8 +30,13 @@ private:
 
 	std::string currentAnimation;
 	std::map<std::string, std::unique_ptr<je::Animation> > animations;
+	std::string currentArmAnimation;
+	std::map<std::string, std::unique_ptr<je::Animation> > armAnimations;
+	sf::Sprite aimer;
 	je::Controller input;
 	float gravity;
+	float armAngle;
+	Facing facing;
 };
 
 }
