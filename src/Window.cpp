@@ -22,17 +22,17 @@ Window::Window (const sf::Vector2f &pos, const sf::Vector2f &dimensions, je::Lev
 void Window::draw (sf::RenderTarget& target, const sf::RenderStates &states) const
 {
     target.draw (frame, states);
-    for (Button b : buttons)
+    for (auto& b : buttons)
     {
-        b.draw (target, states);
+        b->draw (target, states);
     }
 }
 
 void Window::update ()
 {
-    for (Button b : buttons)
+    for (auto& b : buttons)
     {
-        b.update();
+        b->update();
     }
 }
 

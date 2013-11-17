@@ -5,7 +5,6 @@
 #include "Game.hpp"
 #include "Window.hpp"
 #include "Settings.hpp"
-
 #include <vector>
 
 namespace con
