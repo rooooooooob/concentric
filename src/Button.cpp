@@ -1,11 +1,12 @@
 #include "Button.hpp"
 #include "Game.hpp"
+
 #include <iostream>
 
 namespace con
 {
 
-Button::Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const std::string &label, je::Level *level, std::function <void(je::Level*, Window*)> click, std::string texturepath, Window *window) :
+Button::Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const std::string &label, je::Level *level, std::function <void(Button*)> click, std::string texturepath, Window *window) :
     level (level),
     pos (pos),
     dimensions (dimensions),
@@ -14,12 +15,15 @@ Button::Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const s
     label(label),
     input (level->getGame().getInput()),
     texture (level->getGame().getTexManager().get(texturepath)),
-    onClick (click)
+    onClick (click),
+    polling (false),
+    pollPos (0)
 {
     frame.setPosition (pos);
     frame.setTexture (&texture);
     if (!font.loadFromFile("resources/arial.ttf"))
         std::cout << "can't button load fonts\n";
+	std::cout << "constructing\n";
 }
 
 void Button::draw(sf::RenderTarget& target, const sf::RenderStates &states) const
@@ -49,8 +53,26 @@ void Button::update ()
 {
     if (input.isButtonPressed (sf::Mouse::Button::Left) && (sf::FloatRect (pos, dimensions).contains(level->getCursorPos())))
     {
-        onClick (level, window);
+        onClick (this);
+		//std::cout << "dafadsfdag:   " << polling << "   ";
     }
+	std::cout << polling;
+}
+
+const je::Level* Button::getLevel () const
+{
+	return level;
+}
+
+Window* Button::getLink () const
+{
+	return window;
+}
+
+void Button::setPolling (bool truth)
+{
+	polling = truth;
+	std::cout << "\ntruth: " << polling << "   ";
 }
 
 }

@@ -1,6 +1,7 @@
 #ifndef CON_WINDOW_HPP
 #define CON_WINDOW_HPP
 
+#include <memory>
 #include <vector>
 #include "Button.hpp"
 
@@ -17,9 +18,9 @@ class Window
 		void draw(sf::RenderTarget& target, const sf::RenderStates &states = sf::RenderStates::Default) const;
 		bool isOpen() const;
 		void toggle();
-		std::vector<Button> buttons;
+		std::vector<std::unique_ptr<Button> > buttons;
 
-    private:
+    protected:
 		sf::RectangleShape frame;
         sf::Color color;
         bool open;

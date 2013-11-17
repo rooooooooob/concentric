@@ -4,8 +4,8 @@
 #include "Game.hpp"
 #include "Trig.hpp"
 #include "Head.hpp"
+#include "ThrownWeapon.hpp"
 #include <iostream>
-
 const int RUNNING_ANIM_TIME = 11;
 
 namespace con
@@ -20,24 +20,42 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config)
 	,gravity(0)
 	,armAngle(0)
 	,aimer(level->getGame().getTexManager().get("aimer.png"))
-	,facing(Right)
 	,aim(0, 0)
+	,facing(Right)
+	,state(State::Idle)
+	,cooldown(0)
 {
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
 	{
-		sprite.setPosition(pos.x, pos.y);
+		sprite.setPosition(pos);
+		sprite.setOrigin(12, 0);
+	});
+	animations["jumping"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_jumping.png"), 24, 24, 0));
+	animations["jumping"]->apply([&](sf::Sprite& sprite)
+	{
+		sprite.setPosition(pos);
 		sprite.setOrigin(12, 0);
 	});
 
-	armAnimations["sword"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_katana.png"), 48, 32, RUNNING_ANIM_TIME));
-	armAnimations["sword"]->apply([&](sf::Sprite& sprite)
+	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_katana.png"), 48, 32, 12, false));
+	armAnimations["melee"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
 		sprite.setOrigin(24, 10);
 	});
+	armAnimations["throw"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_shuriken.png"), 48, 32, 4, false));
+	armAnimations["throw"]->apply([&](sf::Sprite& sprite)
+	{
+		sprite.setPosition(pos);
+		sprite.setOrigin(24, 10);
+	});
+
 	level->addEntity(new Head(level, pos.x, pos.y, *this));
 	this->setDepth(-6);
+
+	currentArmAnimation = "melee";
+	std::cout << "cooldown: " << &cooldown << " \n   ";
 }
 
 Player::Facing Player::getFacing() const
@@ -61,11 +79,10 @@ void Player::onUpdate()
 	aim.x = input.axisPos("aim_x", pos.x, level);
 	aim.y = input.axisPos("aim_y", pos.y, level);
 
-	if (level->testCollision(this, "SolidGround", 0, gravity))
+	const bool onGround = level->testCollision(this, "SolidGround", 0, gravity + 1);
+	if (onGround)
 	{
 		gravity = 0;
-		if (input.isActionPressed("jump"))
-			gravity = -5;
 	}
 	else
 	{
@@ -73,40 +90,154 @@ void Player::onUpdate()
 		pos.y += gravity;
 	}
 
-	if (input.isActionHeld("move_left"))
+	switch (state)
 	{
-		pos.x -= 2;
-		currentAnimation = "running";
-		animations[currentAnimation]->advanceFrame();
-		facing = Left;
+		case State::Idle:
+			currentAnimation = "running";
+			if (attemptRunning())
+				state = State::Walking;
+			if (attemptJumping())
+				state = State::Jumping;
+			if (attemptSwingWeapon())
+				state = State::SwingWeapon;
+			if (attemptThrowWeapon())
+				state = State::ThrownWeapon;
+			break;
+		case State::Walking://????
+			currentAnimation = "running";
+			if (!attemptRunning())
+				state = State::Idle;
+			if (attemptJumping())
+				state = State::Jumping;
+			if (attemptSwingWeapon())
+				state = State::SwingWeapon;
+			if (attemptThrowWeapon())
+				state = State::ThrownWeapon;
+			break;
+		case State::Sprinting://maybe make sprinting later
+			break;
+		case State::Jumping:
+			currentAnimation = "jumping";
+			attemptRunning(0.75);
+			if (attemptThrowWeapon())
+				state = State::ThrownWeapon;
+			if (onGround)
+				state = State::Idle;
+			break;
+		case State::SwingWeapon:
+			currentArmAnimation = "melee";
+			attemptRunning(0.5);
+			armAnimations[currentArmAnimation]->advanceFrame();
+			if (cooldown == 1)
+			{
+				armAnimations[currentArmAnimation]->reset();
+				state = State::Idle;
+			}
+			break;
+		case State::ThrownWeapon:
+			currentArmAnimation = "throw";
+			attemptRunning();
+			armAnimations[currentArmAnimation]->advanceFrame();
+			if (cooldown == 32)
+			{
+				level->addEntity(new ThrownWeapon(level, pos + je::lengthdir(12, armAngle), config, aim * 12.f));
+			}
+			else if (cooldown == 1)
+			{
+				armAnimations[currentArmAnimation]->reset();
+				state = State::Idle;
+			}
+			break;
+		case State::Stunned:
+			if (cooldown == 1)
+				state = State::Idle;
+			break;
+		default:
+			//how?
+			break;
 	}
+	std::cout << "cooldown = " << cooldown << std::endl;
+	if (cooldown > 0)
+		--cooldown;
 
-	if (input.isActionHeld("move_right"))
+
+	auto bodyAnim = animations.find(currentAnimation);
+	if (bodyAnim != animations.end())
 	{
-		pos.x += 2;
-		currentAnimation = "running";
-		animations[currentAnimation]->advanceFrame();
-		facing = Right;
-	}
-
-
-	if (animations[currentAnimation])
-	{
-		animations[currentAnimation]->apply([&](sf::Sprite& sprite)
+		bodyAnim->second->apply([&](sf::Sprite& sprite)
 		{
 			sprite.setPosition(pos.x, pos.y);
 			sprite.setScale(facing, 1);
 		});
 	}
-	armAngle = je::pointDirection(aim);
+	armAngle = je::direction(aim);
 
-	armAnimations["sword"]->apply([&](sf::Sprite& sprite)
+	auto armAnim = armAnimations.find(currentArmAnimation);
+	if (armAnim != armAnimations.end())
 	{
-		sprite.setPosition(pos);
-		sprite.setScale(1, facing);
-		sprite.setRotation(-armAngle);
-	});
+		armAnim->second->apply([&](sf::Sprite& sprite)
+		{
+			sprite.setPosition(pos);
+			sprite.setScale(1, facing);
+			sprite.setRotation(-armAngle);
+		});
+	}
 	aimer.setPosition(pos + 64.f * aim);
+}
+
+bool Player::attemptRunning(float rate)
+{
+	float speed = 2;
+	bool moved = false;
+	if (input.isActionHeld("move_left") && !level->testCollision(this, "SolidGround", -speed * rate))
+	{
+		pos.x -= speed * rate;
+		animations[currentAnimation]->advanceFrame();
+		facing = Left;
+		moved = true;
+	}
+
+	if (input.isActionHeld("move_right") && !level->testCollision(this, "SolidGround", speed * rate))
+	{
+		pos.x += speed * rate;
+		animations[currentAnimation]->advanceFrame();
+		facing = Right;
+		moved = true;
+	}
+	return moved;
+}
+
+bool Player::attemptJumping()
+{
+	if (level->testCollision(this, "SolidGround", 0, gravity + 1))
+	{
+		if (input.isActionPressed("jump"))
+		{
+			gravity = -5;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Player::attemptSwingWeapon()
+{
+	if (input.isActionPressed("swing"))
+	{
+		cooldown = 64;
+		return true;
+	}
+	return false;
+}
+
+bool Player::attemptThrowWeapon()
+{
+	if (input.isActionHeld("throw"))
+	{
+		cooldown = 48;
+		return true;
+	}
+	return false;
 }
 
 }

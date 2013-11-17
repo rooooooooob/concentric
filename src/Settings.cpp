@@ -21,13 +21,13 @@ const PlayerConfig& Settings::getPlayerConfig(int playerIndex) const
 
 void Settings::addPlayer()
 {
-	configs.push_back({
+	configs.push_back(PlayerConfig(
 		PlayerConfig::Sword::Katana,
 		PlayerConfig::Thrown::Shuriken,
 		PlayerConfig::Type::Ninja,
 		(int) configs.size(),//default to teams 0,1,2...
 		je::Controller(game.getInput(), configs.size() - 1)//so gamepads get used in order 0,1,2...
-	});
+	));
 	je::Controller& input = configs.back().controller;
 	if (configs.size() > 1)
 	{
@@ -53,6 +53,7 @@ void Settings::addPlayer()
 
 		input.setAxis("aim_x", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::X, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
 		input.setAxis("aim_y", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::Y, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
+		configs.back().thrown = PlayerConfig::Thrown::Knife;
 	}
 }
 

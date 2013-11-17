@@ -2,8 +2,8 @@
 #include "Button.hpp"
 #include "Arena.hpp"
 #include "Controller.hpp"
+#include "PollButton.hpp"
 #include <iostream>
-#include <initializer_list>
 
 namespace con
 {
@@ -16,52 +16,43 @@ Menu::Menu (je::Game *game, Settings &settings) :
     current = start;
     sf::IntRect dimensions= this->getCameraBounds();
 
-    start->buttons.push_back (Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
+    start->buttons.push_back (std::unique_ptr<Button>(new Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
                                        sf::Vector2f (100, 50), "Start", this,
-                                        [&](je::Level* l, Window* w)
+                                        [&](Button* b)
                                         {
-                                            je::Game &g = l->getGame();
+                                            je::Game &g = b->getLevel()->getGame();
                                             g.setLevel (new Arena (&g, settings));
                                         },
-                                        "start.png"));
+                                        "start.png")));
 
     Window *settingswindow = new Window (sf::Vector2f (0,0), sf::Vector2f (640, 480), this, sf::Color::Black);
 
-    start->buttons.push_back (Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) + 50),
+    start->buttons.push_back(std::unique_ptr<Button>(new Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) + 50),
                                        sf::Vector2f (100, 50), "Settings", this,
-                                        [&](je::Level* l, Window* w)
+                                        [&](Button *b)
                                         {
-                                            current = w;
+                                            current = b->getLink();
                                         },
-                                        "start.png", settingswindow));
+                                        "start.png", settingswindow)));
 
-    settingswindow->buttons.push_back (Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
-                                       sf::Vector2f (100, 50), "controls", this,
-                                        [&](je::Level* l, Window* w)
+    settingswindow->buttons.push_back (std::unique_ptr<Button>(new PollButton (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
+                                       sf::Vector2f (100, 50), "P1 Controls", this,
+                                        [&](Button *b)
                                         {
-                                            std::cout << "agdsag";
-                                            std::initializer_list<std::string> actions =
-                                            {
-                                                "jump", "move_right", "move_left", "swing", "throw", "L2", "dpadup",
-                                                "dpaddown"
-                                            };
+                                        	b->setPolling(true);
+                                        	std::cout << "lambda";
+                                        },
+                                        "start.png", settings.getPlayerConfig(0))));
 
-											for (int i = 0; i < settings.getNumberOfPlayers(); ++i)
-                                            {
-												PlayerConfig& config = settings.getPlayerConfig(i);
-                                                for (std::string action : actions)
-                                                {
-                                                    je::Controller::Bind b(config.controller.getLastInputAsBind());
-                                                    while (b.device == je::Controller::Bind::Device::Invalid)
-                                                    {
-                                                        je::Controller::Bind b(config.controller.getLastInputAsBind());
-                                                    }
-                                                    config.controller.setKeybinds(action, {b});
-                                                }
-                                            }
+   /* settingswindow->buttons.push_back (Button (sf::Vector2f((dimensions.width/2) - 50, (dimensions.height/2) + 50),
+                                       sf::Vector2f (100, 50), "Back", this,
+                                        [&](Button *b)
+                                        {
+                                            current = start;
                                         },
                                         "start.png"));
-}
+
+*/}
 
 void Menu::drawGUI(sf::RenderTarget& target) const
 {

@@ -23,6 +23,14 @@ struct PlayerConfig
 		Samurai,
 		Ninja
 	};
+	PlayerConfig(Sword sword, Thrown thrown, Type type, int team, const je::Controller& controller)
+		:sword(sword)
+		,thrown(thrown)
+		,type(type)
+		,team(team)
+		,controller(controller)
+	{
+	}
 
 
 	Sword sword;
