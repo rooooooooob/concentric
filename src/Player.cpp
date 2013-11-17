@@ -8,6 +8,7 @@
 #include "ThrownWeapon.hpp"
 #include "Blood.hpp"
 #include "Random.hpp"
+#include "Heart.hpp"
 #include <iostream>
 
 const int RUNNING_ANIM_TIME = 11;
@@ -75,9 +76,14 @@ void Player::damage(float amount)
 	health -= amount;
 	if (health <= 0)
 	{
+		//die here
+		int n = 16 + je::randomf(16);
+        for (int i = 0; i < n; ++i)
+            level->addEntity(new Blood(level, pos, je::lengthdir(2 + je::randomf(3), je::choose({je::randomf(360), 45 + je::randomf(90)}))));
+        level->addEntity(new Heart(level, pos, je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
+
 		health = 0;
 		this->reset();
-		//die here
 	}
 }
 
@@ -199,7 +205,13 @@ void Player::onUpdate()
 				this->damage(twep.getDamage());
 				const int n = je::randomf(6) + 1;
 				for (int i = 0; i < n; ++i)
-					level->addEntity(new Blood(level, twep.getPos(), twep.getVelocity()));
+				{
+					level->addEntity(new Blood(level,
+									 twep.getPos(),
+									 je::lengthdir(je::randomf(je::distance(twep.getVelocity()) + 2.f),
+					                               je::direction(twep.getVelocity()) - 9 + je::randomf(18)))
+					);
+				}
 				twep.destroy();
 			}
 		}
