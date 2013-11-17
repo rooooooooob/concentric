@@ -2,13 +2,15 @@
 #include "Arena.hpp"
 #include "MainMenu.hpp"
 #include "TexManager.hpp"
+#include "Settings.hpp"
 
 int main()
 {
 
 	je::Game game(640, 480, 60);
 	game.getTexManager().setPath("concentric/resources/img/");
-	//game.setLevel (new con::Menu (&game));
-	game.setLevel(new con::Arena(&game));
+	con::Settings settings;
+	game.setLevel (new con::Menu (&game, settings));
+	//game.setLevel(new con::Arena(&game));
     return game.execute();
 }

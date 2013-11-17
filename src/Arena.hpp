@@ -29,9 +29,6 @@ private:
 
 	void transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles) override;
 
-
-
-
 	sf::Vertex bgVertices[4];
 };
 

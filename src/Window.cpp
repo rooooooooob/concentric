@@ -4,7 +4,8 @@ namespace con
 {
 
 Window::Window (const sf::Vector2f &pos, const sf::Vector2f &dimensions, je::Level *level, sf::Color color) :
-    frame (dimensions)
+    frame (dimensions),
+    open (false)
 {
     frame.setPosition (pos);
     frame.setFillColor (color);
@@ -21,12 +22,23 @@ void Window::draw (sf::RenderTarget& target, const sf::RenderStates &states) con
 
 void Window::update ()
 {
-
+    for (Button b : buttons)
+    {
+        b.update();
+    }
 }
 
-void Window::open ()
+bool Window::isOpen () const
 {
+    return open;
+}
 
+void Window::toggle ()
+{
+    if (open)
+        open = false;
+    else
+        open = true;
 }
 
 }
