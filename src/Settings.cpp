@@ -21,13 +21,13 @@ const PlayerConfig& Settings::getPlayerConfig(int playerIndex) const
 
 void Settings::addPlayer()
 {
-	configs.push_back({
+	configs.push_back(PlayerConfig(
 		PlayerConfig::Sword::Katana,
 		PlayerConfig::Thrown::Shuriken,
 		PlayerConfig::Type::Ninja,
 		(int) configs.size(),//default to teams 0,1,2...
 		je::Controller(game.getInput(), configs.size() - 1)//so gamepads get used in order 0,1,2...
-	});
+	));
 	je::Controller& input = configs.back().controller;
 	if (configs.size() > 1)
 	{
