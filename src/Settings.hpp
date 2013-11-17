@@ -2,18 +2,17 @@
 #define CON_SETTINGS_HPP
 
 #include <vector>
-#include "Controller.hpp"
+#include "PlayerConfig.hpp"
 
 namespace con
 {
 
-class Level;
 
 class Settings
 {
     public:
         Settings ();
-        std::vector<je::Controller> controls;
+        std::vector<PlayerConfig> controls;
 
     private:
 };

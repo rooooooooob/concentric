@@ -3,6 +3,7 @@
 #include "Arena.hpp"
 #include "Controller.hpp"
 #include <iostream>
+#include <initializer_list>
 
 namespace con
 {
@@ -11,11 +12,9 @@ Menu::Menu (je::Game *game, Settings &settings) :
     je::Level(game, 640, 480),
     settings (settings)
 {
+    start = new Window (sf::Vector2f (0, 0), sf::Vector2f (640, 480), this, sf::Color::Black);
+    current = start;
     sf::IntRect dimensions= this->getCameraBounds();
-
-    std::vector<Window*> &windowsref = windows;
-    Window *start = new Window (sf::Vector2f (0, 0), sf::Vector2f (640, 480), this, sf::Color::Black);
-    windows.push_back (start);
 
     start->buttons.push_back (Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
                                        sf::Vector2f (100, 50), "Start", this,
@@ -32,16 +31,33 @@ Menu::Menu (je::Game *game, Settings &settings) :
                                        sf::Vector2f (100, 50), "Settings", this,
                                         [&](je::Level* l, Window* w)
                                         {
-                                            windows.push_back(w);
+                                            current = w;
                                         },
                                         "start.png", settingswindow));
 
     settingswindow->buttons.push_back (Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
-                                       sf::Vector2f (100, 50), "", this,
+                                       sf::Vector2f (100, 50), "controls", this,
                                         [&](je::Level* l, Window* w)
                                         {
-                                          //  je::Input& input = level->getInput();
-                                           // settings.getLastInputAsBind()
+                                            std::cout << "agdsag";
+                                            std::initializer_list<std::string> actions =
+                                            {
+                                                "jump", "move_right", "move_left", "swing", "throw", "L2", "dpadup",
+                                                "dpaddown"
+                                            };
+
+                                            for (PlayerConfig config : settings.controls)
+                                            {
+                                                for (std::string action : actions)
+                                                {
+                                                    je::Controller::Bind b(config.controller.getLastInputAsBind());
+                                                    while (b.device == je::Controller::Bind::Device::Invalid)
+                                                    {
+                                                        je::Controller::Bind b(config.controller.getLastInputAsBind());
+                                                    }
+                                                    config.controller.addKeybind(action, b);
+                                                }
+                                            }
                                         },
                                         "start.png"));
 }
@@ -53,14 +69,12 @@ void Menu::drawGUI(sf::RenderTarget& target) const
 
 void Menu::onUpdate()
 {
-    for (Window *window : windows)
-        window->update();
+    current->update();
 }
 
 void Menu::onDraw(sf::RenderTarget& target) const
 {
-    for (Window *window : windows)
-        window->draw(target);
+    current->draw(target);
 }
 
 }
