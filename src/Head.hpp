@@ -19,6 +19,7 @@ private:
 
 	Player& owner;
 	sf::Sprite sprite;
+	float health;
 };
 
 }

@@ -12,6 +12,8 @@
 namespace con
 {
 
+class Head;
+
 class Player : public je::Entity
 {
 public:
@@ -24,10 +26,14 @@ public:
 
 	Facing getFacing() const;
 
+	void damage(float amount);
+
 private:
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 
 	void onUpdate() override;
+
+	void reset();
 
 	bool attemptRunning(float rate = 1.f);
 
@@ -45,7 +51,8 @@ private:
 		Jumping,
 		SwingWeapon,
 		ThrownWeapon,
-		Stunned
+		Stunned,
+		Decapitated
 	};
 
 
@@ -62,6 +69,9 @@ private:
 	Facing facing;
 	State state;
 	int cooldown;
+	Head *head;
+	float health;
+	float maxhealth;
 };
 
 }

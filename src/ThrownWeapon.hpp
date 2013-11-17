@@ -12,6 +12,14 @@ class ThrownWeapon : public je::Entity
 public:
 	ThrownWeapon(je::Level *level, const sf::Vector2f& pos, const PlayerConfig& config, const sf::Vector2f& velocity);
 
+	const sf::Vector2f& getVelocity() const;
+
+	float getDamage() const;
+
+	int getPlayerID() const;
+
+	int getTeamID() const;
+
 private:
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 
@@ -22,6 +30,7 @@ private:
 	const PlayerConfig& config;
 	sf::Vector2f velocity;
 	float gravity;
+	float damage;
 };
 
 }

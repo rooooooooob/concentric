@@ -19,6 +19,7 @@ Blood::Blood(je::Level *level, const sf::Vector2f& pos, const sf::Vector2f& velo
 	   << ".png";
 	sprite.setTexture(level->getGame().getTexManager().get(ss.str()));
 	sprite.setOrigin(3, 3);
+	this->setDepth(-10000);
 }
 
 void Blood::onUpdate()
