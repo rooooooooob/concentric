@@ -5,7 +5,7 @@
 namespace con
 {
 
-Button::Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const std::string &label, je::Level *level, std::function <void(je::Level*)> click, std::string texturepath, Window *window) :
+Button::Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const std::string &label, je::Level *level, std::function <void(je::Level*, Window*)> click, std::string texturepath, Window *window) :
     level (level),
     pos (pos),
     dimensions (dimensions),
@@ -13,8 +13,8 @@ Button::Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const s
     window(window),
     label(label),
     input (level->getGame().getInput()),
-    onClick (click),
-    texture (level->getGame().getTexManager().get(texturepath))
+    texture (level->getGame().getTexManager().get(texturepath)),
+    onClick (click)
 {
     frame.setPosition (pos);
     frame.setTexture (&texture);
@@ -49,7 +49,7 @@ void Button::update ()
 {
     if (input.isButtonPressed (sf::Mouse::Button::Left) && (sf::FloatRect (pos, dimensions).contains(level->getCursorPos())))
     {
-        onClick (level);
+        onClick (level, window);
     }
 }
 

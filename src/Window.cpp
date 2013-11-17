@@ -3,6 +3,14 @@
 namespace con
 {
 
+Window::Window () :
+    frame (sf::Vector2f (0, 0)),
+    open (false)
+{
+    frame.setPosition (0, 0);
+    frame.setFillColor (sf::Color::Black);
+}
+
 Window::Window (const sf::Vector2f &pos, const sf::Vector2f &dimensions, je::Level *level, sf::Color color) :
     frame (dimensions),
     open (false)

@@ -10,12 +10,12 @@ namespace con
 {
 
 class Window;
-class game;
+class Game;
 
 class Button
 {
 	public:
-		Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const std::string &label, je::Level *level, std::function <void(je::Level*)> click, std::string texturepath, Window *window = nullptr);
+		Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const std::string &label, je::Level *level, std::function <void(je::Level*, Window*)> click, std::string texturepath, Window *window = nullptr);
 		void draw(sf::RenderTarget& target, const sf::RenderStates &states = sf::RenderStates::Default) const;
 		void update ();
 
@@ -29,7 +29,7 @@ class Button
 		je::Input& input;
         sf::Texture texture;
         sf::Font font;
-        std::function<void(je::Level*)> onClick;
+        std::function<void(je::Level*, Window*)> onClick;
 };
 
 }

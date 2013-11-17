@@ -6,6 +6,8 @@
 #include "Window.hpp"
 #include "Settings.hpp"
 
+#include <vector>
+
 namespace con
 {
 
@@ -18,7 +20,7 @@ class Menu : public je::Level
         void onDraw(sf::RenderTarget& target) const override;
 
     private:
-        Window start;
+        std::vector<Window*> windows;
         Settings &settings;
 
 };
