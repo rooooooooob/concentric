@@ -20,6 +20,7 @@ Player::Player(je::Level *level, int x, int y, int team, const PlayerConfig& con
 	,armAngle(0)
 	,aimer(level->getGame().getTexManager().get("aimer.png"))
 	,facing(Right)
+	,aim(0, 0)
 {
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
@@ -36,6 +37,8 @@ Player::Player(je::Level *level, int x, int y, int team, const PlayerConfig& con
 	});
 	level->addEntity(new Head(level, pos.x, pos.y, *this));
 	this->setDepth(-6);
+	input.setAxis("aim_x", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::X, false, je::Controller::AxisBind::Interval(-128, 128), &pos.x));
+	input.setAxis("aim_y", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::Y, false, je::Controller::AxisBind::Interval(-128, 128), &pos.y));
 }
 
 Player::Facing Player::getFacing() const
@@ -56,6 +59,9 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 
 void Player::onUpdate()
 {
+	aim.x = input.axisPos("aim_x", level);
+	aim.y = input.axisPos("aim_y", level);
+
 	if (level->testCollision(this, "SolidGround", 0, gravity))
 	{
 		gravity = 0;
@@ -93,14 +99,15 @@ void Player::onUpdate()
 			sprite.setScale(facing, 1);
 		});
 	}
-	armAngle = 0;
+	armAngle = je::pointDirection(aim);
 
 	armAnimations["sword"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
 		sprite.setScale(1, facing);
+		sprite.setRotation(-armAngle);
 	});
-	aimer.setPosition(pos + je::lengthdir(64, armAngle));
+	aimer.setPosition(pos + 64.f * aim);
 }
 
 }

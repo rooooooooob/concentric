@@ -36,6 +36,9 @@ Arena::Arena(je::Game *game)
 	p1controls.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
 	p1controls.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
 	p1controls.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
+	p1controls.addKeybind("move_left", je::Controller::Bind(sf::Keyboard::Key::A));
+	p1controls.addKeybind("move_right", je::Controller::Bind(sf::Keyboard::Key::D));
+	p1controls.addKeybind("jump", je::Controller::Bind(sf::Keyboard::Key::W));
 	p1controls.addKeybind("swing", je::Controller::Bind(sf::Joystick::Axis::Z, true));
 	p1controls.addKeybind("throw", je::Controller::Bind(5));
 	p1controls.addKeybind("L2", je::Controller::Bind(sf::Joystick::Axis::Z));
@@ -51,6 +54,8 @@ Arena::Arena(je::Game *game)
 	p1controls.addKeybind("Y", je::Controller::Bind(3));
 	//left joy in = 8, right = 9
 	//select 6 start 7
+	p1controls.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::U));
+	p1controls.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
 
 	addEntity(new Player(this, getWidth() / 2, getHeight() / 2, 0, p1config, p1controls));
 

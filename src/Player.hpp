@@ -36,6 +36,7 @@ private:
 	je::Controller input;
 	float gravity;
 	float armAngle;
+	sf::Vector2f aim;
 	Facing facing;
 };
 
