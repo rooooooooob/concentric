@@ -19,7 +19,7 @@ class Window
 		void toggle();
 		std::vector<Button> buttons;
 
-    private:
+    protected:
 		sf::RectangleShape frame;
         sf::Color color;
         bool open;

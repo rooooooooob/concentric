@@ -55,6 +55,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config)
 	this->setDepth(-6);
 
 	currentArmAnimation = "melee";
+	std::cout << "cooldown: " << &cooldown << " \n   ";
 }
 
 Player::Facing Player::getFacing() const
