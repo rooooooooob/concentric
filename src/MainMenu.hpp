@@ -20,7 +20,8 @@ class Menu : public je::Level
         void onDraw(sf::RenderTarget& target) const override;
 
     private:
-        std::vector<Window*> windows;
+        Window *start;
+        Window *current;
         Settings &settings;
 
 };

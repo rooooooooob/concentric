@@ -4,6 +4,7 @@
 #include <vector>
 #include "Game.hpp"
 #include "Controller.hpp"
+
 #include "PlayerConfig.hpp"
 
 namespace con
