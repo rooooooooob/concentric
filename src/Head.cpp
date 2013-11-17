@@ -24,7 +24,7 @@ void Head::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 void Head::onUpdate()
 {
 	pos = owner.getPos();
-	sprite.setPosition(pos.x, pos.y - 5);
+	sprite.setPosition(pos.x, pos.y - 4);
 	sprite.setScale(owner.getFacing(), 1);
 }
 

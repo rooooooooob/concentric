@@ -23,10 +23,31 @@ public:
 	Player(je::Level *level, int x, int y, const PlayerConfig& config);
 
 	Facing getFacing() const;
+
 private:
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 
 	void onUpdate() override;
+
+	bool attemptRunning(float rate = 1.f);
+
+	bool attemptJumping();
+
+	bool attemptSwingWeapon();
+
+	bool attemptThrowWeapon();
+
+	enum class State
+	{
+		Idle,
+		Walking,
+		Sprinting,
+		Jumping,
+		SwingWeapon,
+		ThrownWeapon,
+		Stunned
+	};
+
 
 	std::string currentAnimation;
 	std::map<std::string, std::unique_ptr<je::Animation> > animations;
@@ -39,6 +60,8 @@ private:
 	float armAngle;
 	sf::Vector2f aim;
 	Facing facing;
+	State state;
+	int cooldown;
 };
 
 }
