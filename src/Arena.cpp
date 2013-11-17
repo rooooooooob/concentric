@@ -1,6 +1,7 @@
 #include "Arena.hpp"
 #include "Game.hpp"
 
+#include <iostream>
 #include <cstdlib>
 #include "Game.hpp"
 #include "SolidGround.hpp"
@@ -45,6 +46,7 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 
 void Arena::onUpdate()
 {
+	std::cout << "aim_x = " << settings.getPlayerConfig(1).controller.axisPos("aim_x", 0.f) << std::endl;
 }
 
 void Arena::onDraw(sf::RenderTarget& target) const
