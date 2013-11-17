@@ -28,6 +28,7 @@ struct PlayerConfig
 	Sword sword;
 	Thrown thrown;
 	Type type;
+	int team;
 	je::Controller controller;
 };
 

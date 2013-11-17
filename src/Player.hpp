@@ -20,7 +20,7 @@ public:
 		Left = -1,
 		Right = 1
 	};
-	Player(je::Level *level, int x, int y, int team, const PlayerConfig& config);
+	Player(je::Level *level, int x, int y, const PlayerConfig& config);
 
 	Facing getFacing() const;
 private:

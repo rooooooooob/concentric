@@ -5,6 +5,7 @@
 #include "Input.hpp"
 #include "Window.hpp"
 #include "Controller.hpp"
+#include "Settings.hpp"
 
 namespace con
 {
@@ -12,7 +13,7 @@ namespace con
 class Arena : public je::Level
 {
 public:
-	Arena(je::Game * game);
+	Arena(je::Game *game, const Settings& settings);
 
 	void drawGUI(sf::RenderTarget& target) const override;
 
@@ -29,7 +30,11 @@ private:
 
 	void transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles) override;
 
+
+
+
 	sf::Vertex bgVertices[4];
+	const Settings& settings;
 };
 
 }

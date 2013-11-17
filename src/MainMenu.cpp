@@ -19,10 +19,10 @@ Menu::Menu (je::Game *game, Settings &settings) :
 
     start->buttons.push_back (Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
                                        sf::Vector2f (100, 50), "Start", this,
-                                        [](je::Level* l, Window* w)
+                                        [&](je::Level* l, Window* w)
                                         {
                                             je::Game &g = l->getGame();
-                                            g.setLevel (new Arena (&g));
+                                            g.setLevel (new Arena (&g, settings));
                                         },
                                         "start.png"));
 

@@ -11,7 +11,7 @@ const int RUNNING_ANIM_TIME = 11;
 namespace con
 {
 
-Player::Player(je::Level *level, int x, int y, int team, const PlayerConfig& config)
+Player::Player(je::Level *level, int x, int y, const PlayerConfig& config)
 	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 0))
 	,currentAnimation("running")
 	,currentArmAnimation("sword")

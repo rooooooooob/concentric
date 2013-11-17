@@ -13,8 +13,9 @@
 namespace con
 {
 
-Arena::Arena(je::Game *game)
+Arena::Arena(je::Game *game, const Settings& settings)
 	:je::Level(game, 640, 480)
+	,settings(settings)
 {
 	for (int i = 0; i < getWidth(); i += 32)
 	{
@@ -25,44 +26,9 @@ Arena::Arena(je::Game *game)
 		addEntity(grass);
 	}
 
-	PlayerConfig p1config = {
-		PlayerConfig::Sword::Katana,
-		PlayerConfig::Thrown::Shuriken,
-		PlayerConfig::Type::Ninja,
-		je::Controller(getGame().getInput(), 0)
-	};
-
-	je::Controller& p1controls = p1config.controller;
-	p1controls.addKeybind("jump", je::Controller::Bind(4));
-	p1controls.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
-	p1controls.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
-	p1controls.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
-	p1controls.addKeybind("move_left", je::Controller::Bind(sf::Keyboard::Key::A));
-	p1controls.addKeybind("move_right", je::Controller::Bind(sf::Keyboard::Key::D));
-	p1controls.addKeybind("jump", je::Controller::Bind(sf::Keyboard::Key::W));
-	p1controls.addKeybind("swing", je::Controller::Bind(sf::Joystick::Axis::Z, true));
-	p1controls.addKeybind("throw", je::Controller::Bind(5));
-	p1controls.addKeybind("L2", je::Controller::Bind(sf::Joystick::Axis::Z));
-	p1controls.addKeybind("dpadup", je::Controller::Bind(sf::Joystick::Axis::PovX));
-	p1controls.addKeybind("dpaddown", je::Controller::Bind(sf::Joystick::Axis::PovX, true));
-	p1controls.addKeybind("dpadright", je::Controller::Bind(sf::Joystick::Axis::PovY));
-	p1controls.addKeybind("dpadleft", je::Controller::Bind(sf::Joystick::Axis::PovY, true));
-	// axis = R = up to down
-	// axis = U = left to right
-	p1controls.addKeybind("A", je::Controller::Bind(0));
-	p1controls.addKeybind("B", je::Controller::Bind(1));
-	p1controls.addKeybind("X", je::Controller::Bind(2));
-	p1controls.addKeybind("Y", je::Controller::Bind(3));
-	//left joy in = 8, right = 9
-	//select 6 start 7
-	p1controls.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::U));
-	p1controls.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
-	p1controls.setAxis("aim_x", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::X, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
-	p1controls.setAxis("aim_y", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::Y, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
-
-
-	addEntity(new Player(this, getWidth() / 2, getHeight() / 2, 0, p1config));
-
+	int gapSize = getWidth() / (settings.getNumberOfPlayers() + 1);
+	for (int i = 0; i < settings.getNumberOfPlayers(); ++i)
+		addEntity(new Player(this, (i + 1) * gapSize, getHeight() / 2, settings.getPlayerConfig(i)));
 
 	//	set up background gradient
 	bgVertices[0].color = bgVertices[1].color = sf::Color(11, 26, 34);
