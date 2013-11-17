@@ -11,11 +11,12 @@ const int RUNNING_ANIM_TIME = 11;
 namespace con
 {
 
-Player::Player(je::Level *level, int x, int y, int team, const PlayerConfig& config, const je::Controller& controller)
+Player::Player(je::Level *level, int x, int y, int team, const PlayerConfig& config)
 	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 0))
 	,currentAnimation("running")
 	,currentArmAnimation("sword")
-	,input(controller)
+	,config(config)
+	,input(config.controller)
 	,gravity(0)
 	,armAngle(0)
 	,aimer(level->getGame().getTexManager().get("aimer.png"))
@@ -37,8 +38,6 @@ Player::Player(je::Level *level, int x, int y, int team, const PlayerConfig& con
 	});
 	level->addEntity(new Head(level, pos.x, pos.y, *this));
 	this->setDepth(-6);
-	input.setAxis("aim_x", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::X, false, je::Controller::AxisBind::Interval(-128, 128), &pos.x));
-	input.setAxis("aim_y", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::Y, false, je::Controller::AxisBind::Interval(-128, 128), &pos.y));
 }
 
 Player::Facing Player::getFacing() const
@@ -59,8 +58,8 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 
 void Player::onUpdate()
 {
-	aim.x = input.axisPos("aim_x", level);
-	aim.y = input.axisPos("aim_y", level);
+	aim.x = input.axisPos("aim_x", pos.x, level);
+	aim.y = input.axisPos("aim_y", pos.y, level);
 
 	if (level->testCollision(this, "SolidGround", 0, gravity))
 	{

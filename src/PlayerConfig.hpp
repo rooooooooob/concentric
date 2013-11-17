@@ -1,6 +1,8 @@
 #ifndef CON_PLAYERCONFIG_HPP
 #define CON_PLAYERCONFIG_HPP
 
+#include "Controller.hpp"
+
 namespace con
 {
 
@@ -26,6 +28,7 @@ struct PlayerConfig
 	Sword sword;
 	Thrown thrown;
 	Type type;
+	je::Controller controller;
 };
 
 }

@@ -20,11 +20,11 @@ public:
 		Left = -1,
 		Right = 1
 	};
-	Player(je::Level *level, int x, int y, int team, const PlayerConfig& config, const je::Controller& controller);
+	Player(je::Level *level, int x, int y, int team, const PlayerConfig& config);
 
 	Facing getFacing() const;
 private:
-	void draw(sf::RenderTarget& target, const sf::RenderStates& states = sf::RenderStates::Default) const override;
+	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 
 	void onUpdate() override;
 
@@ -33,7 +33,8 @@ private:
 	std::string currentArmAnimation;
 	std::map<std::string, std::unique_ptr<je::Animation> > armAnimations;
 	sf::Sprite aimer;
-	je::Controller input;
+	const je::Controller& input;
+	const PlayerConfig& config;
 	float gravity;
 	float armAngle;
 	sf::Vector2f aim;

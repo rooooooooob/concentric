@@ -28,10 +28,11 @@ Arena::Arena(je::Game *game)
 	PlayerConfig p1config = {
 		PlayerConfig::Sword::Katana,
 		PlayerConfig::Thrown::Shuriken,
-		PlayerConfig::Type::Ninja
+		PlayerConfig::Type::Ninja,
+		je::Controller(getGame().getInput(), 0)
 	};
 
-	je::Controller p1controls(getGame().getInput(), 0);
+	je::Controller& p1controls = p1config.controller;
 	p1controls.addKeybind("jump", je::Controller::Bind(4));
 	p1controls.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
 	p1controls.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
@@ -56,8 +57,11 @@ Arena::Arena(je::Game *game)
 	//select 6 start 7
 	p1controls.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::U));
 	p1controls.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
+	p1controls.setAxis("aim_x", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::X, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
+	p1controls.setAxis("aim_y", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::Y, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
 
-	addEntity(new Player(this, getWidth() / 2, getHeight() / 2, 0, p1config, p1controls));
+
+	addEntity(new Player(this, getWidth() / 2, getHeight() / 2, 0, p1config));
 
 
 	//	set up background gradient
