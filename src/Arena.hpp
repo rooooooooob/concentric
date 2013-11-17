@@ -6,6 +6,7 @@
 #include "Window.hpp"
 #include "Controller.hpp"
 #include "Settings.hpp"
+#include "Scoreboard.hpp"
 
 namespace con
 {
@@ -35,6 +36,7 @@ private:
 
 	sf::Vertex bgVertices[4];
 	const Settings& settings;
+	Scoreboard scores;
 };
 
 }

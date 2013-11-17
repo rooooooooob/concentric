@@ -40,19 +40,18 @@ Menu::Menu (je::Game *game, Settings &settings) :
                                         [&](Button *b)
                                         {
                                         	b->setPolling(true);
-                                        	std::cout << "lambda";
                                         },
                                         "start.png", settings.getPlayerConfig(0))));
 
-   /* settingswindow->buttons.push_back (Button (sf::Vector2f((dimensions.width/2) - 50, (dimensions.height/2) + 50),
+    settingswindow->buttons.push_back (std::unique_ptr<Button> (new Button (sf::Vector2f((dimensions.width/2) - 50, (dimensions.height/2) + 50),
                                        sf::Vector2f (100, 50), "Back", this,
                                         [&](Button *b)
                                         {
                                             current = start;
                                         },
-                                        "start.png"));
+                                        "start.png")));
 
-*/}
+}
 
 void Menu::drawGUI(sf::RenderTarget& target) const
 {

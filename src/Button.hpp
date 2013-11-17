@@ -20,6 +20,7 @@ class Button
 		const je::Level* getLevel () const;
 		Window* getLink () const;
 		void setPolling (bool truth);
+		void resetPollPos ();
 
 	protected:
 		je::Level* level;

@@ -15,6 +15,7 @@ class PollButton : public Button
 
 	private:
 		PlayerConfig& config;
+		je::Controller::Bind previous;
 };
 
 }

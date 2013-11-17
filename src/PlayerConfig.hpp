@@ -37,6 +37,7 @@ struct PlayerConfig
 	Thrown thrown;
 	Type type;
 	int team;
+	int playerID;
 	je::Controller controller;
 };
 

@@ -11,7 +11,7 @@ const int RUNNING_ANIM_TIME = 11;
 namespace con
 {
 
-Player::Player(je::Level *level, int x, int y, const PlayerConfig& config)
+Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Scoreboard& scores)
 	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 0))
 	,currentAnimation("running")
 	,currentArmAnimation("sword")
@@ -24,6 +24,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config)
 	,facing(Right)
 	,state(State::Idle)
 	,cooldown(0)
+	,scores (scores)
 {
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)

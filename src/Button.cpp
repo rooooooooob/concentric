@@ -54,9 +54,7 @@ void Button::update ()
     if (input.isButtonPressed (sf::Mouse::Button::Left) && (sf::FloatRect (pos, dimensions).contains(level->getCursorPos())))
     {
         onClick (this);
-		//std::cout << "dafadsfdag:   " << polling << "   ";
     }
-	std::cout << polling;
 }
 
 const je::Level* Button::getLevel () const
@@ -72,7 +70,11 @@ Window* Button::getLink () const
 void Button::setPolling (bool truth)
 {
 	polling = truth;
-	std::cout << "\ntruth: " << polling << "   ";
+}
+
+void Button::resetPollPos ()
+{
+	pollPos = 0;
 }
 
 }

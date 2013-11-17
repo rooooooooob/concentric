@@ -8,6 +8,7 @@
 #include "Animation.hpp"
 #include "Controller.hpp"
 #include "PlayerConfig.hpp"
+#include "Scoreboard.hpp"
 
 namespace con
 {
@@ -20,7 +21,7 @@ public:
 		Left = -1,
 		Right = 1
 	};
-	Player(je::Level *level, int x, int y, const PlayerConfig& config);
+	Player(je::Level *level, int x, int y, const PlayerConfig& config, Scoreboard& scores);
 
 	Facing getFacing() const;
 
@@ -62,6 +63,7 @@ private:
 	Facing facing;
 	State state;
 	int cooldown;
+	Scoreboard& scores;
 };
 
 }
