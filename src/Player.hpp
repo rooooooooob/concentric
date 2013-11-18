@@ -28,6 +28,8 @@ public:
 
 	void damage(float amount);
 
+	const PlayerConfig& getConfig() const;
+
 private:
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 

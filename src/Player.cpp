@@ -46,7 +46,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config)
 		sprite.setOrigin(12, 0);
 	});
 
-	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_katana.png"), 48, 32, 12, false));
+	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_katana.png"), 48, 32, 9, false));
 	armAnimations["melee"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
@@ -87,6 +87,11 @@ void Player::damage(float amount)
 	}
 }
 
+const PlayerConfig& Player::getConfig() const
+{
+	return config;
+}
+
 void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 {
 	auto it = animations.find(currentAnimation);
@@ -115,6 +120,11 @@ void Player::onUpdate()
 		pos.y += gravity;
 	}
 
+	if (state != State::Decapitated && head->getState() == Head::State::Decapitated)
+	{
+		state = State::Decapitated;
+		head = nullptr;
+	}
 	switch (state)
 	{
 		case State::Idle:
@@ -184,7 +194,8 @@ void Player::onUpdate()
 			break;
 		case State::Decapitated:
 			attemptRunning(1.5f);
-			level->addEntity(new Blood(level, pos + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), je::randomf(16))));
+			level->addEntity(new Blood(level, pos + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
+			this->damage(3);//bleedout
 			break;
 		default:
 			//how?
