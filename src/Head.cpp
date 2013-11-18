@@ -56,6 +56,10 @@ void Head::onUpdate()
 				{
 					this->damage(twep.getDamage() * 10);//	BOOM HEADSHOT
 					owner.damage(twep.getDamage());
+					if (health <= 0)
+					{
+						velocity = twep.getVelocity() / 2.f;
+					}
 					const int n = je::randomf(6) + 1;
 					for (int i = 0; i < n; ++i)
 					{
@@ -68,12 +72,13 @@ void Head::onUpdate()
 					twep.destroy();
 				}
 			}
+			pos = owner.getPos();
 		}
 			break;
 		case State::Decapitated:
 			if (!level->testCollision(this, "SolidGround", velocity.x, velocity.y))
 			{
-				velocity.y += 0.03;
+				velocity.y += 0.06;
 				pos += velocity;
 				sprite.rotate(0.1);
 			}
@@ -81,7 +86,7 @@ void Head::onUpdate()
 				this->destroy();
 			break;
 	}
-	pos = owner.getPos();
+
 	sprite.setPosition(pos.x, pos.y - 4);
 	sprite.setScale(owner.getFacing(), 1);
 }
