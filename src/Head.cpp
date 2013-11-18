@@ -11,10 +11,11 @@ namespace con
 {
 
 Head::Head(je::Level *level, int x, int y, Player& owner)
-	:je::Entity(level, "Head", sf::Vector2f(x, y), sf::Vector2i(8, 8), sf::Vector2i(-4, -6))
+	:je::Entity(level, "Head", sf::Vector2f(x, y), sf::Vector2i(8, 8), sf::Vector2i(-4, -8))
 	,owner(owner)
 	,sprite(level->getGame().getTexManager().get("ninja_head.png"))
 	,health(50)
+	,state(State::Capitated)
 {
 	sprite.setOrigin(4, 4);
 	sprite.setPosition(pos);
@@ -55,6 +56,10 @@ void Head::onUpdate()
 				{
 					this->damage(twep.getDamage() * 10);//	BOOM HEADSHOT
 					owner.damage(twep.getDamage());
+					if (health <= 0)
+					{
+						velocity = twep.getVelocity() / 2.f;
+					}
 					const int n = je::randomf(6) + 1;
 					for (int i = 0; i < n; ++i)
 					{
@@ -67,12 +72,13 @@ void Head::onUpdate()
 					twep.destroy();
 				}
 			}
+			pos = owner.getPos();
 		}
 			break;
 		case State::Decapitated:
 			if (!level->testCollision(this, "SolidGround", velocity.x, velocity.y))
 			{
-				velocity.y += 0.03;
+				velocity.y += 0.06;
 				pos += velocity;
 				sprite.rotate(0.1);
 			}
@@ -80,7 +86,7 @@ void Head::onUpdate()
 				this->destroy();
 			break;
 	}
-	pos = owner.getPos();
+
 	sprite.setPosition(pos.x, pos.y - 4);
 	sprite.setScale(owner.getFacing(), 1);
 }
