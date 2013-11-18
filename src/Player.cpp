@@ -17,7 +17,7 @@ namespace con
 {
 
 Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Scoreboard& scores)
-	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 0))
+	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 2))
 	,currentAnimation("running")
 	,currentArmAnimation("sword")
 	,config(config)

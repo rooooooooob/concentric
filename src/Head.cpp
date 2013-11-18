@@ -11,10 +11,11 @@ namespace con
 {
 
 Head::Head(je::Level *level, int x, int y, Player& owner)
-	:je::Entity(level, "Head", sf::Vector2f(x, y), sf::Vector2i(8, 8), sf::Vector2i(-4, -6))
+	:je::Entity(level, "Head", sf::Vector2f(x, y), sf::Vector2i(8, 8), sf::Vector2i(-4, -8))
 	,owner(owner)
 	,sprite(level->getGame().getTexManager().get("ninja_head.png"))
 	,health(50)
+	,state(State::Capitated)
 {
 	sprite.setOrigin(4, 4);
 	sprite.setPosition(pos);
