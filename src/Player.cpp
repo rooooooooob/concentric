@@ -241,7 +241,7 @@ void Player::onUpdate()
 				const int n = je::randomf(15) + 3;
 				for (int i = 0; i < n; ++i)
 				{
-					level->addEntity(new Blood(level, pos, je::lengthdir(je::randomf(3 + je::randomf(9)), je::randomf(36))));
+					level->addEntity(new Blood(level, pos, je::lengthdir(je::randomf(3 + je::randomf(9)), je::randomf(360)) - sf::Vector2f(0, 2)));
 				}
 				atk.destroy();
 			}
