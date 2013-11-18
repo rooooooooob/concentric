@@ -10,13 +10,13 @@ namespace con
 class Attack : public je::Entity
 {
 public:
-	Attack(je::Level *level, const sf::Vector2f *follow, const sf::Vector2f& cpos, const sf::Vector2i& dim, int team, int time, float damage, const sf::Vector2f& veloc = sf::Vector2f(0, 0));
+	Attack(je::Level *level, const sf::Vector2f *follow, const sf::Vector2f& cpos, const sf::Vector2i& dim, const PlayerConfig& config, int time, float damage, const sf::Vector2f& veloc = sf::Vector2f(0, 0));
 
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 	void onUpdate() override;
 
 	float getDamage() const;
-	int getTeam() const;
+	const PlayerConfig& getPlayerConfig() const;
 
 protected:
 	const sf::Vector2f *follow;
@@ -24,7 +24,7 @@ protected:
 	sf::Vector2f veloc;
 
 private:
-	int team;
+	const PlayerConfig& config;
 	int time;
 	float damage;
 };

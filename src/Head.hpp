@@ -15,7 +15,7 @@ public:
 		Capitated,
 		Decapitated
 	};
-	Head(je::Level *level, int x, int y, Player& owner);
+	Head(je::Level *level, int x, int y, Player& owner, Scoreboard& scores);
 
 	State getState() const;
 
@@ -31,6 +31,7 @@ private:
 	float health;
 	State state;
 	sf::Vector2f velocity;
+	Scoreboard& scores;
 };
 
 }

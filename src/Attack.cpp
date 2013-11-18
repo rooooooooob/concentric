@@ -3,15 +3,20 @@
 namespace con
 {
 
-Attack::Attack(je::Level *level, const sf::Vector2f *follow, const sf::Vector2f& cpos, const sf::Vector2i& dim, int team, int time, float damage, const sf::Vector2f& veloc)
+Attack::Attack(je::Level *level, const sf::Vector2f *follow, const sf::Vector2f& cpos, const sf::Vector2i& dim, const PlayerConfig& config, int time, float damage, const sf::Vector2f& veloc)
     :je::Entity(level, "Attack", cpos, dim)
     ,follow(follow)
     ,cpos(cpos)
     ,veloc(veloc)
-    ,team(team)
+    ,config(config)
     ,time(time)
     ,damage(damage)
 {
+}
+
+const PlayerConfig& Attack::getPlayerConfig() const
+{
+	return config;
 }
 
 void Attack::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
@@ -34,11 +39,6 @@ void Attack::onUpdate()
 float Attack::getDamage() const
 {
     return damage;
-}
-
-int Attack::getTeam() const
-{
-    return team;
 }
 
 }

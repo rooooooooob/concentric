@@ -22,6 +22,7 @@ private:
 	sf::Sprite sprite;
 	sf::Vector2f veloc;
 	int timer;
+	bool isStuck;
 };
 
 }

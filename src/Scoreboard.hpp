@@ -1,5 +1,5 @@
-#ifndef CON_SCOREBOARD_HPP
-#define CON_SCOREBOARD_HPP
+#ifndef CON_Scoreboard_HPP
+#define CON_Scoreboard_HPP
 
 #include "PlayerConfig.hpp"
 #include <vector>

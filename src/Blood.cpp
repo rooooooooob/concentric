@@ -12,6 +12,7 @@ Blood::Blood(je::Level *level, const sf::Vector2f& pos, const sf::Vector2f& velo
 	:je::Entity(level, "Blood", pos, sf::Vector2i(3, 3), sf::Vector2i(-1, -1))
 	,veloc(veloc)
 	,timer(360)
+	,isStuck(false)
 {
 	std::stringstream ss;
 	ss << "blood"
@@ -19,6 +20,7 @@ Blood::Blood(je::Level *level, const sf::Vector2f& pos, const sf::Vector2f& velo
 	   << ".png";
 	sprite.setTexture(level->getGame().getTexManager().get(ss.str()));
 	sprite.setOrigin(3, 3);
+	sprite.setPosition(pos);
 	this->setDepth(-10000);
 }
 
@@ -26,15 +28,23 @@ void Blood::onUpdate()
 {
 	if (--timer < 0)
 	this->destroy();
-	if (!level->testCollision(this, "SolidGround"))
+	if (!isStuck)
 	{
-		veloc.y += 0.2;
-		pos += veloc;
-	}
-	if (pos.x < -16 || pos.x > level->getWidth() + 16)
-		this->destroy();
+		if (level->testCollision(this, "SolidGround"))
+		{
+			isStuck = true;
+		}
+		else
+		{
+			veloc.y += 0.2;
+			pos += veloc;
 
-	sprite.setPosition(pos);
+			if (pos.x < -16 || pos.x > level->getWidth() + 16)
+				this->destroy();
+
+			sprite.setPosition(pos);
+		}
+	}
 }
 
 void Blood::draw(sf::RenderTarget& target, const sf::RenderStates& states) const

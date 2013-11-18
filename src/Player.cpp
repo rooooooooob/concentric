@@ -61,7 +61,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 		sprite.setOrigin(24, 10);
 	});
 
-	head = new Head(level, pos.x, pos.y, *this);
+	head = new Head(level, pos.x, pos.y, *this, scores);
 	level->addEntity(head);
 	this->setDepth(-6);
 
@@ -86,7 +86,7 @@ void Player::damage(float amount, const PlayerConfig *source)
 
 		health = 0;
 		if (source)
-			scores.reportScore (source);
+			scores.reportScore(source);
 		this->reset();
 	}
 }
@@ -238,9 +238,9 @@ void Player::onUpdate()
 		for (je::Entity *entity : attacks)
 		{
 			Attack& atk = *((Attack*) entity);
-			if (atk.getTeam() != this->config.team)
+			if (atk.getPlayerConfig().team != this->config.team)
 			{
-				this->damage(atk.getDamage());
+				this->damage(atk.getDamage(), &atk.getPlayerConfig());
 				const int n = je::randomf(15) + 3;
 				for (int i = 0; i < n; ++i)
 				{
@@ -288,7 +288,7 @@ void Player::reset()
 	{
 		head->destroy();
 	}
-	head = new Head(level, pos.x, pos.y, *this);
+	head = new Head(level, pos.x, pos.y, *this, scores);
 	level->addEntity(head);
 }
 
@@ -331,7 +331,7 @@ bool Player::attemptSwingWeapon()
 {
 	if (input.isActionPressed("swing") && cooldown == 0)
 	{
-		level->addEntity(new Attack(level, &pos, sf::Vector2f(-6, -16) + je::lengthdir(4, armAngle), sf::Vector2i(12, 12), config.team, 32, 35, sf::Vector2f(facing * 0.4, 0.25)));
+		level->addEntity(new Attack(level, &pos, sf::Vector2f(-6, -16) + je::lengthdir(4, armAngle), sf::Vector2i(12, 12), config, 32, 35, sf::Vector2f(facing * 0.4, 0.25)));
 		cooldown = 64;
 		return true;
 	}
