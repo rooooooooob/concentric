@@ -27,7 +27,7 @@ public:
 
 	Facing getFacing() const;
 
-	void damage(float amount);
+	void damage(float amount, const PlayerConfig* source = nullptr);
 
 	const PlayerConfig& getConfig() const;
 

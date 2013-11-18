@@ -1,5 +1,5 @@
 #ifndef CON_ARENA_HPP
-#define CON_ARNEA_HPP
+#define CON_ARENA_HPP
 
 #include "Level.hpp"
 #include "Input.hpp"

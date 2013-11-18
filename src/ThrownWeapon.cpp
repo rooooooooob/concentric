@@ -55,6 +55,10 @@ int ThrownWeapon::getTeamID() const
 	return config.team;//update this later
 }
 
+const PlayerConfig* ThrownWeapon::getPlayerConfig ()
+{
+	return &config;
+}
 
 void ThrownWeapon::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 {

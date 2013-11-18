@@ -72,7 +72,7 @@ Player::Facing Player::getFacing() const
 	return facing;
 }
 
-void Player::damage(float amount)
+void Player::damage(float amount, const PlayerConfig *source)
 {
 	health -= amount;
 	if (health <= 0)
@@ -84,6 +84,8 @@ void Player::damage(float amount)
         level->addEntity(new Heart(level, pos, je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
 
 		health = 0;
+		if (source)
+			scores.reportScore (source);
 		this->reset();
 	}
 }
@@ -169,6 +171,7 @@ void Player::onUpdate()
 				armAnimations[currentArmAnimation]->reset();
 				state = State::Idle;
 			}
+
 			break;
 		case State::ThrownWeapon:
 			currentArmAnimation = "throw";
@@ -214,7 +217,7 @@ void Player::onUpdate()
 			ThrownWeapon& twep = *((ThrownWeapon*) entity);
 			if (twep.getTeamID() != this->config.team)
 			{
-				this->damage(twep.getDamage());
+				this->damage(twep.getDamage(), twep.getPlayerConfig());
 				const int n = je::randomf(6) + 1;
 				for (int i = 0; i < n; ++i)
 				{

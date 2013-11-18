@@ -52,11 +52,12 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 	for (int i = 0; i < n; ++i)
 	{
 		std::stringstream ss;
-		ss << "Team " << i + 1 << ":";
+		ss << "Team " << i + 1;
 		int m = scores.numberOfPlayers(i);
 		for (int j = 0; j < m; ++j)
 		{
 			ss << "\n	Player " << j + 1 << ": " << scores.getPlayerScore (i, j);
+			std::cout << "\n" << scores.getPlayerScore (i, j);
 		}
 		sf::Font f;
 		if (!f.loadFromFile ("resources/arial.ttf"))

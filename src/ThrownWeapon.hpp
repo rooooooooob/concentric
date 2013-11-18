@@ -20,6 +20,8 @@ public:
 
 	int getTeamID() const;
 
+	const PlayerConfig* getPlayerConfig ();
+
 private:
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 
