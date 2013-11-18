@@ -9,6 +9,7 @@
 #include "Blood.hpp"
 #include "Random.hpp"
 #include "Heart.hpp"
+#include "Attack.hpp"
 #include <iostream>
 
 const int RUNNING_ANIM_TIME = 11;
@@ -106,7 +107,7 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 
 void Player::onUpdate()
 {
-	std::cout << "hp: " << health << " / " << maxhealth << std::endl;
+	//std::cout << "hp: " << health << " / " << maxhealth << std::endl;
 	aim.x = input.axisPos("aim_x", pos.x, level);
 	aim.y = input.axisPos("aim_y", pos.y, level);
 
@@ -228,6 +229,24 @@ void Player::onUpdate()
 			}
 		}
 	}
+	{
+		std::vector<Entity*> attacks;
+		level->findCollisions(attacks, this, "Attack");
+		for (je::Entity *entity : attacks)
+		{
+			Attack& atk = *((Attack*) entity);
+			if (atk.getTeam() != this->config.team)
+			{
+				this->damage(atk.getDamage());
+				const int n = je::randomf(15) + 3;
+				for (int i = 0; i < n; ++i)
+				{
+					level->addEntity(new Blood(level, pos, je::lengthdir(je::randomf(3 + je::randomf(9)), je::randomf(36))));
+				}
+				atk.destroy();
+			}
+		}
+	}
 
 	//	and then fix up the sprites
 	auto bodyAnim = animations.find(currentAnimation);
@@ -309,6 +328,7 @@ bool Player::attemptSwingWeapon()
 {
 	if (input.isActionPressed("swing") && cooldown == 0)
 	{
+		level->addEntity(new Attack(level, &pos, sf::Vector2f(-6, -16) + je::lengthdir(4, armAngle), sf::Vector2i(12, 12), config.team, 32, 35, sf::Vector2f(facing * 0.4, 0.25)));
 		cooldown = 64;
 		return true;
 	}
