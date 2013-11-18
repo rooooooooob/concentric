@@ -2,6 +2,7 @@
 #define CON_ATTACK_HPP
 
 #include "Entity.hpp"
+#include "PlayerConfig.hpp"
 
 namespace con
 {
