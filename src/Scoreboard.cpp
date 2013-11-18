@@ -31,9 +31,9 @@ void Scoreboard::removeTeam ()
 	teamList.pop_back ();
 }
 
-void Scoreboard::reportKill (const PlayerConfig& killer)
+void Scoreboard::reportScore (const PlayerConfig& p)
 {
-	teamList[killer.team][killer.playerID]++;
+	teamList[p.team][p.playerID]++;
 }
 
 int Scoreboard::numberOfTeams () const

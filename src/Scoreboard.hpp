@@ -17,7 +17,7 @@ class Scoreboard
 		void addTeam ();
 		void removePlayer (int team);
 		void removeTeam ();
-		void reportKill (const PlayerConfig& killer);
+		void reportScore (const PlayerConfig& p);
 		int numberOfTeams () const;
 		int numberOfPlayers (int team) const;
 		int getPlayerScore (int team, int player) const;

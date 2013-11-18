@@ -1,11 +1,16 @@
 #include "Player.hpp"
 
+#include <vector>
 #include "Level.hpp"
 #include "Game.hpp"
 #include "Trig.hpp"
 #include "Head.hpp"
 #include "ThrownWeapon.hpp"
+#include "Blood.hpp"
+#include "Random.hpp"
+#include "Heart.hpp"
 #include <iostream>
+
 const int RUNNING_ANIM_TIME = 11;
 
 namespace con
@@ -25,6 +30,9 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,state(State::Idle)
 	,cooldown(0)
 	,scores (scores)
+	,head(nullptr)
+	,health(100)
+	,maxhealth(health)
 {
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
@@ -39,7 +47,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 		sprite.setOrigin(12, 0);
 	});
 
-	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_katana.png"), 48, 32, 12, false));
+	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_katana.png"), 48, 32, 9, false));
 	armAnimations["melee"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
@@ -52,16 +60,37 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 		sprite.setOrigin(24, 10);
 	});
 
-	level->addEntity(new Head(level, pos.x, pos.y, *this));
+	head = new Head(level, pos.x, pos.y, *this);
+	level->addEntity(head);
 	this->setDepth(-6);
 
 	currentArmAnimation = "melee";
-	std::cout << "cooldown: " << &cooldown << " \n   ";
 }
 
 Player::Facing Player::getFacing() const
 {
 	return facing;
+}
+
+void Player::damage(float amount)
+{
+	health -= amount;
+	if (health <= 0)
+	{
+		//die here
+		int n = 16 + je::randomf(16);
+        for (int i = 0; i < n; ++i)
+            level->addEntity(new Blood(level, pos, je::lengthdir(2 + je::randomf(3), je::choose({je::randomf(360), 45 + je::randomf(90)}))));
+        level->addEntity(new Heart(level, pos, je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
+
+		health = 0;
+		this->reset();
+	}
+}
+
+const PlayerConfig& Player::getConfig() const
+{
+	return config;
 }
 
 void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
@@ -77,6 +106,7 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 
 void Player::onUpdate()
 {
+	std::cout << "hp: " << health << " / " << maxhealth << std::endl;
 	aim.x = input.axisPos("aim_x", pos.x, level);
 	aim.y = input.axisPos("aim_y", pos.y, level);
 
@@ -91,6 +121,11 @@ void Player::onUpdate()
 		pos.y += gravity;
 	}
 
+	if (state != State::Decapitated && head->getState() == Head::State::Decapitated)
+	{
+		state = State::Decapitated;
+		head = nullptr;
+	}
 	switch (state)
 	{
 		case State::Idle:
@@ -138,6 +173,11 @@ void Player::onUpdate()
 		case State::ThrownWeapon:
 			currentArmAnimation = "throw";
 			attemptRunning();
+			if (attemptJumping())
+			{
+				armAnimations[currentArmAnimation]->reset();
+				state = State::Jumping;
+			}
 			armAnimations[currentArmAnimation]->advanceFrame();
 			if (cooldown == 32)
 			{
@@ -153,15 +193,43 @@ void Player::onUpdate()
 			if (cooldown == 1)
 				state = State::Idle;
 			break;
+		case State::Decapitated:
+			attemptRunning(1.5f);
+			level->addEntity(new Blood(level, pos + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
+			this->damage(3);//bleedout
+			break;
 		default:
 			//how?
 			break;
 	}
-	std::cout << "cooldown = " << cooldown << std::endl;
 	if (cooldown > 0)
 		--cooldown;
 
+	//	now check for pointy things stabbing you
+	{
+		std::vector<Entity*> thrownWeapons;
+		level->findCollisions(thrownWeapons, this, "ThrownWeapon");
+		for (je::Entity *entity : thrownWeapons)
+		{
+			ThrownWeapon& twep = *((ThrownWeapon*) entity);
+			if (twep.getTeamID() != this->config.team)
+			{
+				this->damage(twep.getDamage());
+				const int n = je::randomf(6) + 1;
+				for (int i = 0; i < n; ++i)
+				{
+					level->addEntity(new Blood(level,
+									 twep.getPos(),
+									 je::lengthdir(je::randomf(je::distance(twep.getVelocity()) + 2.f),
+					                               je::direction(twep.getVelocity()) - 9 + je::randomf(18)))
+					);
+				}
+				twep.destroy();
+			}
+		}
+	}
 
+	//	and then fix up the sprites
 	auto bodyAnim = animations.find(currentAnimation);
 	if (bodyAnim != animations.end())
 	{
@@ -184,6 +252,22 @@ void Player::onUpdate()
 		});
 	}
 	aimer.setPosition(pos + 64.f * aim);
+}
+
+void Player::reset()
+{
+	health = maxhealth;
+	pos.x = je::random(level->getWidth());
+	pos.y = -32.f;
+	state = State::Idle;
+	currentAnimation = "running";
+	cooldown = 0;
+	if (head)
+	{
+		head->destroy();
+	}
+	head = new Head(level, pos.x, pos.y, *this);
+	level->addEntity(head);
 }
 
 bool Player::attemptRunning(float rate)
@@ -223,7 +307,7 @@ bool Player::attemptJumping()
 
 bool Player::attemptSwingWeapon()
 {
-	if (input.isActionPressed("swing"))
+	if (input.isActionPressed("swing") && cooldown == 0)
 	{
 		cooldown = 64;
 		return true;
@@ -233,7 +317,7 @@ bool Player::attemptSwingWeapon()
 
 bool Player::attemptThrowWeapon()
 {
-	if (input.isActionHeld("throw"))
+	if (input.isActionHeld("throw") && cooldown == 0)
 	{
 		cooldown = 48;
 		return true;
