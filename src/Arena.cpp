@@ -44,6 +44,10 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	bgVertices[1].position = sf::Vector2f(getWidth(), 0);
 	bgVertices[2].position = sf::Vector2f(getWidth(), getHeight());
 	bgVertices[3].position = sf::Vector2f(0, getHeight());
+	//	GAME JAM THEME: CASTLE
+	Scenery *castle = new Scenery(this, getWidth() / 2 - (192/2), getHeight() - 3 * 32 -128, "castle.png");
+	castle->setDepth(100.f);//in the distance (WHICH IS WHY IT'S SMALL!!!)
+	this->addEntity(castle);
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const
