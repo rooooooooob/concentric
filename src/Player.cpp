@@ -10,6 +10,7 @@
 #include "Random.hpp"
 #include "Heart.hpp"
 #include "Attack.hpp"
+#include "PlayerResources.hpp"
 #include <iostream>
 
 const int RUNNING_ANIM_TIME = 11;
@@ -35,26 +36,26 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,health(100)
 	,maxhealth(health)
 {
-	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_running.png"), 24, 24, RUNNING_ANIM_TIME));
+	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
 		sprite.setOrigin(12, 0);
 	});
-	animations["jumping"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_jumping.png"), 24, 24, 0));
+	animations["jumping"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_jumping.png"), 24, 24, 0));
 	animations["jumping"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
 		sprite.setOrigin(12, 0);
 	});
 
-	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_katana.png"), 48, 32, 9, false));
+	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getSwingingArmSprite(config.sword)), 48, 32, 9, false));
 	armAnimations["melee"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
 		sprite.setOrigin(24, 10);
 	});
-	armAnimations["throw"].reset(new je::Animation(level->getGame().getTexManager().get("ninja_shuriken.png"), 48, 32, 4, false));
+	armAnimations["throw"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getThrowingArmSprite(config.thrown)), 48, 32, 4, false));
 	armAnimations["throw"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
