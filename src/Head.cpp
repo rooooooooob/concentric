@@ -7,6 +7,7 @@
 #include "ThrownWeapon.hpp"
 #include "Blood.hpp"
 #include "Scoreboard.hpp"
+#include "PlayerResources.hpp"
 
 namespace con
 {
@@ -14,7 +15,7 @@ namespace con
 Head::Head(je::Level *level, int x, int y, Player& owner, Scoreboard& scores)
 	:je::Entity(level, "Head", sf::Vector2f(x, y), sf::Vector2i(8, 8), sf::Vector2i(-4, -8))
 	,owner(owner)
-	,sprite(level->getGame().getTexManager().get("ninja_head.png"))
+	,sprite(level->getGame().getTexManager().get(getClassPrefix(owner.getConfig().type) + "_head.png"))
 	,health(50)
 	,state(State::Capitated)
 	,scores(scores)
