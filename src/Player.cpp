@@ -299,22 +299,46 @@ void Player::reset()
 
 bool Player::attemptRunning(float rate)
 {
-	float speed = 2;
-	bool moved = false;
-	if (input.isActionHeld("move_left") && !level->testCollision(this, "SolidGround", -speed * rate))
-	{
-		pos.x -= speed * rate;
-		animations[currentAnimation]->advanceFrame();
-		facing = Left;
-		moved = true;
-	}
+	const float speed = 2;
+	const int highestWalkableSlope = 8;
 
-	if (input.isActionHeld("move_right") && !level->testCollision(this, "SolidGround", speed * rate))
+	bool moved = false;
+
+	if (input.isActionHeld("move_left") && !input.isActionHeld("move_right"))
 	{
-		pos.x += speed * rate;
-		animations[currentAnimation]->advanceFrame();
-		facing = Right;
-		moved = true;
+		for (int i = 0; i < highestWalkableSlope; ++i)
+		{
+			if (!level->testCollision(this, "SolidGround", -speed * rate, -i))
+			{
+				pos.x -= speed * rate;
+				pos.y -= i;
+				moved = true;
+				break;
+			}
+		}
+		if (moved)
+		{
+			animations[currentAnimation]->advanceFrame();
+			facing = Left;
+		}
+	}
+	if (!moved && input.isActionHeld("move_right"))
+	{
+		for (int i = 0; i < highestWalkableSlope; ++i)
+		{
+			if (!level->testCollision(this, "SolidGround", speed * rate, -i))
+			{
+				pos.x += speed * rate;
+				pos.y -= i;
+				moved = true;
+				break;
+			}
+		}
+		if (moved)
+		{
+			animations[currentAnimation]->advanceFrame();
+			facing = Right;
+		}
 	}
 	return moved;
 }

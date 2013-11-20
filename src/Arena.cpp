@@ -12,6 +12,7 @@
 #include "PlayerConfig.hpp"
 #include "Player.hpp"
 #include "BambooForest.hpp"
+#include "Random.hpp"
 
 namespace con
 {
@@ -25,15 +26,21 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	scores.addTeam ();
 	scores.addPlayer (1);
 	const int groundHeight = getHeight() - 128;
+	int yoffset = 0;
 	for (int i = 0; i < getWidth(); i += 32)
 	{
-		for (int j = groundHeight; j < getHeight(); j += 32)
+		yoffset += je::random(8) - 4;
+		if (yoffset > 8)
+			yoffset = 8;
+		if (yoffset < -12)
+			yoffset = -12;
+		for (int j = groundHeight + yoffset; j < getHeight(); j += 32)
 		{
 			SolidGround *ground = new SolidGround(this, i, j, sf::Rect<int>(i, j, 32, 32), "dirt.png");
 			ground->setDepth(-10);
 			this->addEntity(ground);
 		}
-		Scenery *grass = new Scenery(this, i, groundHeight - 6, (rand() % 2 ? "grass0.png" : "grass1.png"));
+		Scenery *grass = new Scenery(this, i, groundHeight - 6 + yoffset, (rand() % 2 ? "grass0.png" : "grass1.png"));
 		grass->setDepth(-11);
 		this->addEntity(grass);
 	}
@@ -98,7 +105,7 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 		scoreText.setString(ss.str());
 		const int gapSpaceLeft = getWidth() - n * scoreText.getLocalBounds().width - 16;
 		scoreText.setPosition((gapSpaceLeft / (n - 1)) * i + scoreText.getLocalBounds().width / 2, 8);
-		
+
 		target.draw(scoreText);
 	}
 }
@@ -109,7 +116,7 @@ void Arena::onUpdate()
 	ss << "";
 	if (getGame().getFPS() < getGame().getFPSCap() * 0.95)
 	{
-		ss << "\t\tFPS: " << getGame().getFPS() << "[" << getGame().getExactFPS() << "] / " << getGame().getFPSCap();	
+		ss << "\t\tFPS: " << getGame().getFPS() << "[" << getGame().getExactFPS() << "] / " << getGame().getFPSCap();
 	}
 	getGame().setTitle(ss.str());
 }
