@@ -171,10 +171,7 @@ void Player::onUpdate()
 			if (armAnimations[currentArmAnimation]->isFinished())
 			{
 				armAnimations[currentArmAnimation]->reset();
-			}
-			if (cooldown == 1)
-			{
-				state = State::Idle;
+				state = State::AttackCooldown;
 			}
 			break;
 		case State::ThrownWeapon:
@@ -189,11 +186,7 @@ void Player::onUpdate()
 			if (cooldown == 32)
 			{
 				level->addEntity(new ThrownWeapon(level, pos + je::lengthdir(12, armAngle), config, aim * 12.f));
-			}
-			else if (cooldown == 1)
-			{
-				armAnimations[currentArmAnimation]->reset();
-				state = State::Idle;
+				state = State::AttackCooldown;
 			}
 			break;
 		case State::Stunned:
@@ -204,6 +197,15 @@ void Player::onUpdate()
 			attemptRunning(1.5f);
 			level->addEntity(new Blood(level, pos + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
 			this->damage(3);//bleedout
+			break;
+		case State::AttackCooldown:
+			attemptRunning(0.9f);
+			attemptJumping();
+			if (cooldown == 1)
+			{
+				armAnimations[currentArmAnimation]->reset();
+				state = State::Idle;
+			}
 			break;
 		default:
 			//how?
@@ -332,7 +334,7 @@ bool Player::attemptJumping()
 
 bool Player::attemptSwingWeapon()
 {
-	if (input.isActionPressed("swing") && cooldown == 0)
+	if (input.isActionPressed("swing"))
 	{
 		level->addEntity(new Attack(level, &pos, sf::Vector2f(-6, -16) + je::lengthdir(4, armAngle), sf::Vector2i(12, 12), config, 32, 35, sf::Vector2f(facing * 0.4, 0.25)));
 		cooldown = 64;
@@ -343,7 +345,7 @@ bool Player::attemptSwingWeapon()
 
 bool Player::attemptThrowWeapon()
 {
-	if (input.isActionHeld("throw") && cooldown == 0)
+	if (input.isActionHeld("throw"))
 	{
 		cooldown = 48;
 		return true;

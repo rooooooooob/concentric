@@ -55,7 +55,8 @@ private:
 		SwingWeapon,
 		ThrownWeapon,
 		Stunned,
-		Decapitated
+		Decapitated,
+		AttackCooldown
 	};
 
 

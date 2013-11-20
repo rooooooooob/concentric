@@ -58,6 +58,9 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	scoreText.setFont(font);
 	scoreText.setCharacterSize(20);
 	scoreText.setColor (sf::Color::Blue);
+
+	//	make sure heads are updated after players! (or else the heads lag behind)
+	this->setSpecificOrderEntitiesPost({"Head"});
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const
