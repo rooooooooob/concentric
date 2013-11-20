@@ -51,6 +51,13 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	this->addEntity(castle);
 
 	this->addEntity(new BambooForest(this, sf::Vector2f(0, castle->getPos().y + 128), this->getWidth()));
+
+	//	init all score text crap (jesus christ max why would you recreate this every frame?)
+	if (!font.loadFromFile ("resources/arial.ttf"))
+			std::cout << "bad font file";
+	scoreText.setFont(font);
+	scoreText.setCharacterSize(20);
+	scoreText.setColor (sf::Color::Blue);
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const
@@ -64,15 +71,10 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 		for (int j = 0; j < m; ++j)
 		{
 			ss << "\n	Player " << j + 1 << ": " << scores.getPlayerScore (i, j);
-			std::cout << "\n" << scores.getPlayerScore (i, j);
 		}
-		sf::Font f;
-		if (!f.loadFromFile ("resources/arial.ttf"))
-			std::cout << "bad font file";
-		sf::Text t(ss.str(), f, 20);
-		t.setColor (sf::Color::Blue);
-		t.setPosition (150*i, 0);
-		target.draw (t);
+		scoreText.setPosition(150 * i, 0);
+		scoreText.setString(ss.str());
+		target.draw(scoreText);
 	}
 }
 

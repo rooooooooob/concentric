@@ -27,7 +27,7 @@ Blood::Blood(je::Level *level, const sf::Vector2f& pos, const sf::Vector2f& velo
 void Blood::onUpdate()
 {
 	if (--timer < 0)
-	this->destroy();
+		this->destroy();
 	if (!isStuck)
 	{
 		if (level->testCollision(this, "SolidGround"))

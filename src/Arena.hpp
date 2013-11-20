@@ -37,6 +37,8 @@ private:
 	sf::Vertex bgVertices[4];
 	const Settings& settings;
 	Scoreboard scores;
+	sf::Font font;
+	mutable sf::Text scoreText;
 };
 
 }
