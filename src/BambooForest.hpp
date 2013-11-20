@@ -9,7 +9,7 @@ namespace con
 class BambooForest : public je::Entity
 {
 public:
-	BambooForest(je::Level *level, const sf::Vector2f& pos, int width);
+	BambooForest(je::Level *level, const sf::Vector2f& pos, int width, float density = 1.f);
 
 private:
 	class Tree
@@ -27,7 +27,7 @@ private:
 
 		sf::Vector2f pos;
 		float angle;
-		Leaf leaves[3];
+		Leaf leaves[4];
 	};
 
 	void onUpdate() override;
