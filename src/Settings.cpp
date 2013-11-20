@@ -41,6 +41,8 @@ void Settings::addPlayer()
 
 		input.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::U));
 		input.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
+		configs.back().thrown = PlayerConfig::Thrown::Knife;
+		configs.back().type = PlayerConfig::Type::Samurai;
 	}
 	else
 	{
@@ -53,8 +55,6 @@ void Settings::addPlayer()
 
 		input.setAxis("aim_x", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::X, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
 		input.setAxis("aim_y", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::Y, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
-		configs.back().thrown = PlayerConfig::Thrown::Knife;
-		configs.back().type = PlayerConfig::Type::Samurai;
 	}
 }
 

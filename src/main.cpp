@@ -8,7 +8,7 @@ int main()
 {
 
 	je::Game game(640, 480, 60);
-	game.getTexManager().setPath("concentric/resources/img/");
+	game.getTexManager().setPath("resources/img/");
 	con::Settings settings(game);
 	settings.addPlayer();
 	settings.addPlayer();

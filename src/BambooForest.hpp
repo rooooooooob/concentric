@@ -15,10 +15,19 @@ private:
 	class Tree
 	{
 	public:
+		struct Leaf
+		{
+			Leaf();
+
+			float angle;
+			int height;
+			int id;
+		};
 		Tree(int x, int y);
 
 		sf::Vector2f pos;
 		float angle;
+		Leaf leaves[3];
 	};
 
 	void onUpdate() override;
@@ -27,6 +36,7 @@ private:
 
 
 	mutable sf::Sprite stalk;
+	mutable sf::Sprite leaves[3];
 	std::vector<Tree> trees;
 };
 

@@ -40,7 +40,7 @@ Arena::Arena(je::Game *game, const Settings& settings)
 
 	//	set up background gradient
 	bgVertices[0].color = bgVertices[1].color = sf::Color(11, 26, 34);
-	bgVertices[2].color = bgVertices[3].color = sf::Color(31, 75, 95);
+	bgVertices[2].color = bgVertices[3].color = sf::Color(40, 90, 116);
 	bgVertices[0].position = sf::Vector2f(0, 0);
 	bgVertices[1].position = sf::Vector2f(getWidth(), 0);
 	bgVertices[2].position = sf::Vector2f(getWidth(), getHeight());
@@ -53,11 +53,11 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	this->addEntity(new BambooForest(this, sf::Vector2f(0, castle->getPos().y + 128), this->getWidth()));
 
 	//	init all score text crap (jesus christ max why would you recreate this every frame?)
-	if (!font.loadFromFile ("resources/arial.ttf"))
+	if (!font.loadFromFile ("resources/DOMOAN__.ttf"))
 		std::cerr << "bad font file";
 	scoreText.setFont(font);
 	scoreText.setCharacterSize(20);
-	scoreText.setColor (sf::Color::Blue);
+	scoreText.setColor (sf::Color::White);
 
 	//	make sure heads are updated after players! (or else the heads lag behind)
 	this->setSpecificOrderEntitiesPost({"Head"});
@@ -75,8 +75,10 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 		{
 			ss << "\n	Player " << j + 1 << ": " << scores.getPlayerScore (i, j);
 		}
-		scoreText.setPosition(150 * i, 0);
 		scoreText.setString(ss.str());
+		const int gapSpaceLeft = getWidth() - n * scoreText.getLocalBounds().width - 16;
+		scoreText.setPosition((gapSpaceLeft / (n - 1)) * i + scoreText.getLocalBounds().width / 2, 8);
+		
 		target.draw(scoreText);
 	}
 }

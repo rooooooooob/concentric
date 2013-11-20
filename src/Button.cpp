@@ -21,7 +21,7 @@ Button::Button (const sf::Vector2f &pos, const sf::Vector2f &dimensions, const s
 {
     frame.setPosition (pos);
     frame.setTexture (&texture);
-    if (!font.loadFromFile("resources/arial.ttf"))
+    if (!font.loadFromFile("resources/Shojumaru-Regular.ttf"))
         std::cout << "can't button load fonts\n";
 	std::cout << "constructing\n";
 }
