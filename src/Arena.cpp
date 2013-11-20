@@ -54,7 +54,7 @@ Arena::Arena(je::Game *game, const Settings& settings)
 
 	//	init all score text crap (jesus christ max why would you recreate this every frame?)
 	if (!font.loadFromFile ("resources/arial.ttf"))
-			std::cout << "bad font file";
+		std::cerr << "bad font file";
 	scoreText.setFont(font);
 	scoreText.setCharacterSize(20);
 	scoreText.setColor (sf::Color::Blue);
@@ -88,6 +88,7 @@ void Arena::onDraw(sf::RenderTarget& target) const
 
 void Arena::beforeDraw(sf::RenderTarget& target) const
 {
+	//	draw the gradient sky background
 	target.draw(bgVertices, 4, sf::Quads);
 }
 

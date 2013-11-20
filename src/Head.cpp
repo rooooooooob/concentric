@@ -19,8 +19,9 @@ Head::Head(je::Level *level, int x, int y, Player& owner, Scoreboard& scores)
 	,health(50)
 	,state(State::Capitated)
 	,scores(scores)
+	,stuck(false)
 {
-	sprite.setOrigin(4, 4);
+	sprite.setOrigin(3, 4);
 	sprite.setPosition(pos);
 	this->setDepth(-5);
 }
@@ -79,14 +80,21 @@ void Head::onUpdate()
 		}
 			break;
 		case State::Decapitated:
-			if (!level->testCollision(this, "SolidGround", velocity.x, velocity.y))
+			if (!stuck)
 			{
-				velocity.y += 0.06;
-				pos += velocity;
-				sprite.rotate(0.1);
+				if (level->testCollision(this, "SolidGround", velocity.x, velocity.y))
+				{
+					stuck = true;
+				}
+				else
+				{
+					velocity.y += 0.06;
+					pos += velocity;
+					sprite.rotate(5);
+				}
+				if (pos.x < -32 || pos.x > level->getWidth() + 32)
+					this->destroy();
 			}
-			if (pos.x < -32 || pos.x > level->getWidth() + 32)
-				this->destroy();
 			break;
 	}
 

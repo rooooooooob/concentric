@@ -32,6 +32,7 @@ private:
 	State state;
 	sf::Vector2f velocity;
 	Scoreboard& scores;
+	bool stuck;
 };
 
 }
