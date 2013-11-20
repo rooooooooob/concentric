@@ -11,6 +11,7 @@
 #include "Controller.hpp"
 #include "PlayerConfig.hpp"
 #include "Player.hpp"
+#include "BambooForest.hpp"
 
 namespace con
 {
@@ -46,8 +47,10 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	bgVertices[3].position = sf::Vector2f(0, getHeight());
 	//	GAME JAM THEME: CASTLE
 	Scenery *castle = new Scenery(this, getWidth() / 2 - (192/2), getHeight() - 3 * 32 -128, "castle.png");
-	castle->setDepth(100.f);//in the distance (WHICH IS WHY IT'S SMALL!!!)
+	castle->setDepth(100);//in the distance (WHICH IS WHY IT'S SMALL!!!)
 	this->addEntity(castle);
+
+	this->addEntity(new BambooForest(this, sf::Vector2f(0, castle->getPos().y + 128), this->getWidth()));
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const

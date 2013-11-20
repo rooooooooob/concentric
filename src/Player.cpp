@@ -49,7 +49,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 		sprite.setOrigin(12, 0);
 	});
 
-	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getSwingingArmSprite(config.sword)), 48, 32, 9, false));
+	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getSwingingArmSprite(config.sword)), 48, 32, 6, false));
 	armAnimations["melee"]->apply([&](sf::Sprite& sprite)
 	{
 		sprite.setPosition(pos);
@@ -168,12 +168,14 @@ void Player::onUpdate()
 			currentArmAnimation = "melee";
 			attemptRunning(0.5);
 			armAnimations[currentArmAnimation]->advanceFrame();
-			if (cooldown == 1)
+			if (armAnimations[currentArmAnimation]->isFinished())
 			{
 				armAnimations[currentArmAnimation]->reset();
+			}
+			if (cooldown == 1)
+			{
 				state = State::Idle;
 			}
-
 			break;
 		case State::ThrownWeapon:
 			currentArmAnimation = "throw";
