@@ -24,6 +24,13 @@ public:
 	int getNumberOfPlayers() const;
 
 private:
+	void defaultControlsX360(je::Controller& input);
+
+	void defaultControlsPS3(je::Controller& input);
+
+	void defaultControlsPC(je::Controller& input);
+
+
 	std::vector<PlayerConfig> configs;
 	je::Game& game;
 };

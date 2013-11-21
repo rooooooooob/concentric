@@ -45,6 +45,17 @@ Arena::Arena(je::Game *game, const Settings& settings)
 		this->addEntity(grass);
 	}
 
+	Scenery *beam = new Scenery(this, 32 + 16, groundHeight - 32, "beam.png");
+	beam->setDepth(1);
+	this->addEntity(beam);
+	beam = new Scenery(this, 164 + 16 + 4, groundHeight - 32, "beam.png");
+	beam->setDepth(1);
+	addEntity(beam);
+	for (int i = 32; i < 164; i += 32)
+	{
+		addEntity(new SolidGround(this, i, groundHeight - 32, sf::Rect<int>(i, groundHeight - 32, 32, 6), "platform.png"));
+	}
+
 	int gapSize = getWidth() / (settings.getNumberOfPlayers() + 1);
 	for (int i = 0; i < settings.getNumberOfPlayers(); ++i)
 		this->addEntity(new Player(this, (i + 1) * gapSize, getHeight() / 2, settings.getPlayerConfig(i), scores));
