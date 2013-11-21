@@ -23,6 +23,11 @@ void PollButton::update ()
 	{
 		std::string actions [5] = { "jump", "move_right", "move_left", "swing", "throw"};
 		label = actions[pollPos];
+		unsigned int joyID;
+		if (input.findController(joyID))
+		{
+			config.controller.setJoystickID(joyID);
+		}
 		je::Controller::Bind b(config.controller.getLastInputAsBind());
 		if (b.device != je::Controller::Bind::Device::Invalid)
 		{

@@ -38,10 +38,10 @@ void Settings::defaultControlsPS3(je::Controller& input)
 	input.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
 	input.addKeybind("jump", je::Controller::Bind(4));
 	input.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
-	input.addKeybind("swing", je::Controller::Bind(sf::Joystick::Axis::Z, true));
+	input.addKeybind("swing", je::Controller::Bind(7));
 	input.addKeybind("throw", je::Controller::Bind(5));
 
-	input.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::U));
+	input.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::Z));
 	input.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
 }
 
@@ -70,11 +70,11 @@ void Settings::addPlayer()
 	if (configs.size() > 1)
 	{
 		defaultControlsPS3(configs.back().controller);
+		configs.back().thrown = PlayerConfig::Thrown::Knife;
 	}
 	else
 	{
 		defaultControlsPC(configs.back().controller);
-		configs.back().thrown = PlayerConfig::Thrown::Knife;
 		configs.back().type = PlayerConfig::Type::Samurai;
 	}
 }

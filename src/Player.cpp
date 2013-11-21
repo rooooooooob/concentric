@@ -255,7 +255,11 @@ void Player::onUpdate()
 			}
 		}
 	}
-
+	//	to stop walking off map
+	if (pos.x < 32)
+		pos.x = 32;
+	if (pos.x > level->getWidth() - 32)
+		pos.x = level->getWidth() - 32;
 	//	and then fix up the sprites
 	auto bodyAnim = animations.find(currentAnimation);
 	if (bodyAnim != animations.end())
