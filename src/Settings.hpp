@@ -21,6 +21,8 @@ public:
 
 	void addPlayer();
 
+	void removePlayer();
+
 	int getNumberOfPlayers() const;
 
 private:

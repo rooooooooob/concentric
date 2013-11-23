@@ -79,6 +79,11 @@ void Settings::addPlayer()
 	}
 }
 
+void Settings::removePlayer()
+{
+	configs.pop_back();
+}
+
 int Settings::getNumberOfPlayers() const
 {
 	return configs.size();
