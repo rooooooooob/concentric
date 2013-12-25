@@ -86,7 +86,7 @@ void Player::damage(float amount, const PlayerConfig *source)
         level->addEntity(new Heart(level, pos, je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
 
 		health = 0;
-		if (source)
+		if (state != State::Decapitated && source)
 			scores.reportScore(source);
 		this->reset();
 	}

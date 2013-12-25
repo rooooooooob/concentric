@@ -31,12 +31,13 @@ Head::State Head::getState() const
 	return state;
 }
 
-void Head::damage(float amount)
+void Head::damage(float amount, const PlayerConfig *source)
 {
 	health -= amount;
-	if (health <= 0)
+	if (health <= 0 && state == State::Capitated)
 	{
 		state = State::Decapitated;
+		scores.reportScore(source);
 	}
 }
 
@@ -58,7 +59,7 @@ void Head::onUpdate()
 				ThrownWeapon& twep = *((ThrownWeapon*) entity);
 				if (twep.getTeamID() != owner.getConfig().team)
 				{
-					this->damage(twep.getDamage() * 10);//	BOOM HEADSHOT
+					this->damage(twep.getDamage() * 10, twep.getPlayerConfig());//	BOOM HEADSHOT
 					owner.damage(twep.getDamage());
 					if (health <= 0)
 					{

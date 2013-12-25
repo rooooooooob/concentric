@@ -20,7 +20,7 @@ public:
 	State getState() const;
 
 private:
-	void damage(float amount);
+	void damage(float amount, const PlayerConfig *source);
 
 	void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 
