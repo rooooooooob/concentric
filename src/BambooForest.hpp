@@ -1,7 +1,7 @@
 #ifndef CON_BAMBOOFOREST_HPP
 #define CON_BAMBOOFOREST_HPP
 
-#include "Entity.hpp"
+#include "Core/Entity.hpp"
 
 namespace con
 {

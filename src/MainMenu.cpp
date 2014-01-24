@@ -1,7 +1,7 @@
 #include "MainMenu.hpp"
 #include "Button.hpp"
 #include "Arena.hpp"
-#include "Controller.hpp"
+#include "Core/Controller.hpp"
 #include "PollButton.hpp"
 #include <iostream>
 

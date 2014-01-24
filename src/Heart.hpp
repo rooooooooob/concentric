@@ -1,7 +1,7 @@
 #ifndef CON_HEART_HPP
 #define CON_HEART_HPP
 
-#include "Entity.hpp"
+#include "Core/Entity.hpp"
 
 namespace con
 {

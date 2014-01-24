@@ -1,7 +1,7 @@
 #ifndef CON_THROWNWEAPON_HPP
 #define CON_THROWNWEAPON_HPP
 
-#include "Entity.hpp"
+#include "Core/Entity.hpp"
 #include "PlayerConfig.hpp"
 
 namespace con

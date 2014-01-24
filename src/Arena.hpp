@@ -1,10 +1,10 @@
 #ifndef CON_ARENA_HPP
 #define CON_ARENA_HPP
 
-#include "Level.hpp"
-#include "Input.hpp"
+#include "Core/Level.hpp"
+#include "Core/Input.hpp"
 #include "Window.hpp"
-#include "Controller.hpp"
+#include "Core/Controller.hpp"
 #include "Settings.hpp"
 #include "Scoreboard.hpp"
 

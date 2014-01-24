@@ -3,8 +3,8 @@
 
 #include <functional>
 #include <SFML/Graphics.hpp>
-#include "Level.hpp"
-#include "Input.hpp"
+#include "Core/Level.hpp"
+#include "Core/Input.hpp"
 
 namespace con
 {

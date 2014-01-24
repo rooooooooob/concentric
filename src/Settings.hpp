@@ -2,8 +2,8 @@
 #define CON_SETTINGS_HPP
 
 #include <vector>
-#include "Game.hpp"
-#include "Controller.hpp"
+#include "Core/Game.hpp"
+#include "Core/Controller.hpp"
 
 #include "PlayerConfig.hpp"
 

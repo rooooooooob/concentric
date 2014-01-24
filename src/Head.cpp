@@ -1,9 +1,9 @@
 #include "Head.hpp"
 
-#include "Game.hpp"
-#include "Level.hpp"
-#include "Random.hpp"
-#include "Trig.hpp"
+#include "Core/Game.hpp"
+#include "Core/Level.hpp"
+#include "Utility/Random.hpp"
+#include "Utility/Trig.hpp"
 #include "ThrownWeapon.hpp"
 #include "Blood.hpp"
 #include "Scoreboard.hpp"

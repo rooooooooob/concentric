@@ -1,13 +1,13 @@
 #include "Player.hpp"
 
 #include <vector>
-#include "Level.hpp"
-#include "Game.hpp"
-#include "Trig.hpp"
+#include "Core/Level.hpp"
+#include "Core/Game.hpp"
+#include "Utility/Trig.hpp"
 #include "Head.hpp"
 #include "ThrownWeapon.hpp"
 #include "Blood.hpp"
-#include "Random.hpp"
+#include "Utility/Random.hpp"
 #include "Heart.hpp"
 #include "Attack.hpp"
 #include "PlayerResources.hpp"

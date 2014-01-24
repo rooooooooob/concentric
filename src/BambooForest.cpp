@@ -1,9 +1,9 @@
 #include "BambooForest.hpp"
 
-#include "Game.hpp"
-#include "Level.hpp"
-#include "Random.hpp"
-#include "Trig.hpp"
+#include "Core/Game.hpp"
+#include "Core/Level.hpp"
+#include "Utility/Random.hpp"
+#include "Utility/Trig.hpp"
 
 const int stalkHeight = 192;
 

@@ -1,8 +1,8 @@
 #ifndef CON_MENU_HPP
 #define CON_MENU_HPP
 
-#include "Level.hpp"
-#include "Game.hpp"
+#include "Core/Level.hpp"
+#include "Core/Game.hpp"
 #include "Window.hpp"
 #include "Settings.hpp"
 #include <vector>

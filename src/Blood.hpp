@@ -1,8 +1,8 @@
 #ifndef CON_BLOOD_HPP
 #define CON_BLOOD_HPP
 
-#include "Random.hpp"
-#include "Entity.hpp"
+#include "Utility/Random.hpp"
+#include "Core/Entity.hpp"
 
 namespace con
 {

@@ -4,9 +4,9 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "Entity.hpp"
-#include "Animation.hpp"
-#include "Controller.hpp"
+#include "Core/Entity.hpp"
+#include "Graphics/Animation.hpp"
+#include "Core/Controller.hpp"
 #include "PlayerConfig.hpp"
 #include "Scoreboard.hpp"
 

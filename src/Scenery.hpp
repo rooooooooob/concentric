@@ -2,7 +2,7 @@
 #define CON_SCENERY_HPP
 
 #include <SFML/Graphics/Sprite.hpp>
-#include "Entity.hpp"
+#include "Core/Entity.hpp"
 
 namespace con
 {

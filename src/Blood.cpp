@@ -2,8 +2,8 @@
 
 
 #include <sstream>
-#include "Level.hpp"
-#include "Game.hpp"
+#include "Core/Level.hpp"
+#include "Core/Game.hpp"
 
 namespace con
 {

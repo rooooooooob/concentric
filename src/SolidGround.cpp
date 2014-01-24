@@ -1,7 +1,7 @@
 #include "SolidGround.hpp"
 
-#include "Game.hpp"
-#include "Level.hpp"
+#include "Core/Game.hpp"
+#include "Core/Level.hpp"
 
 namespace con
 {

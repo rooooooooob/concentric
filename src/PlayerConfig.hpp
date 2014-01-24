@@ -1,7 +1,7 @@
 #ifndef CON_PLAYERCONFIG_HPP
 #define CON_PLAYERCONFIG_HPP
 
-#include "Controller.hpp"
+#include "Core/Controller.hpp"
 
 namespace con
 {

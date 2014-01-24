@@ -1,7 +1,7 @@
 #ifndef CON_HEAD_HPP
 #define CON_HEAD_HPP
 
-#include "Entity.hpp"
+#include "Core/Entity.hpp"
 #include "Player.hpp"
 
 namespace con

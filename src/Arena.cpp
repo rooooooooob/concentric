@@ -1,18 +1,18 @@
 #include "Arena.hpp"
-#include "Game.hpp"
+#include "Core/Game.hpp"
 
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
-#include "Game.hpp"
+#include "Core/Game.hpp"
 #include "SolidGround.hpp"
 #include "Scenery.hpp"
 #include "Scoreboard.hpp"
-#include "Controller.hpp"
+#include "Core/Controller.hpp"
 #include "PlayerConfig.hpp"
 #include "Player.hpp"
 #include "BambooForest.hpp"
-#include "Random.hpp"
+#include "Utility/Random.hpp"
 
 namespace con
 {

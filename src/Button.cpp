@@ -1,5 +1,5 @@
 #include "Button.hpp"
-#include "Game.hpp"
+#include "Core/Game.hpp"
 
 #include <iostream>
 
