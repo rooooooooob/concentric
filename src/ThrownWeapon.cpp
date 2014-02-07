@@ -1,8 +1,8 @@
 #include "ThrownWeapon.hpp"
 
-#include "Core/Game.hpp"
-#include "Core/Level.hpp"
-#include "Utility/Trig.hpp"
+#include "jam-engine/Core/Game.hpp"
+#include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Utility/Trig.hpp"
 
 namespace con
 {

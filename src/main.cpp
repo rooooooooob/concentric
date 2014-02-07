@@ -1,7 +1,7 @@
-#include "Core/Game.hpp"
+#include "jam-engine/Core/Game.hpp"
 #include "Arena.hpp"
 #include "MainMenu.hpp"
-#include "Graphics/TexManager.hpp"
+#include "jam-engine/Graphics/TexManager.hpp"
 #include "Settings.hpp"
 
 //#include "GraphTest.hpp"

@@ -2,10 +2,10 @@
 
 #include <cmath>
 #include "Blood.hpp"
-#include "Core/Level.hpp"
-#include "Core/Game.hpp"
-#include "Utility/Trig.hpp"
-#include "Utility/Random.hpp"
+#include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Core/Game.hpp"
+#include "jam-engine/Utility/Trig.hpp"
+#include "jam-engine/Utility/Random.hpp"
 
 namespace con
 {

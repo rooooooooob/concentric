@@ -1,5 +1,5 @@
 #include "Button.hpp"
-#include "Core/Game.hpp"
+#include "jam-engine/Core/Game.hpp"
 
 #include <iostream>
 

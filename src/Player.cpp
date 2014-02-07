@@ -1,13 +1,13 @@
 #include "Player.hpp"
 
 #include <vector>
-#include "Core/Level.hpp"
-#include "Core/Game.hpp"
-#include "Utility/Trig.hpp"
+#include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Core/Game.hpp"
+#include "jam-engine/Utility/Trig.hpp"
 #include "Head.hpp"
 #include "ThrownWeapon.hpp"
 #include "Blood.hpp"
-#include "Utility/Random.hpp"
+#include "jam-engine/Utility/Random.hpp"
 #include "Heart.hpp"
 #include "Attack.hpp"
 #include "PlayerResources.hpp"

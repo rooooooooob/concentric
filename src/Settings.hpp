@@ -2,8 +2,8 @@
 #define CON_SETTINGS_HPP
 
 #include <vector>
-#include "Core/Game.hpp"
-#include "Core/Controller.hpp"
+#include "jam-engine/Core/Game.hpp"
+#include "jam-engine/Core/Controller.hpp"
 
 #include "PlayerConfig.hpp"
 

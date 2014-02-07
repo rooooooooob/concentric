@@ -1,7 +1,7 @@
 #include "SolidGround.hpp"
 
-#include "Core/Game.hpp"
-#include "Core/Level.hpp"
+#include "jam-engine/Core/Game.hpp"
+#include "jam-engine/Core/Level.hpp"
 
 namespace con
 {

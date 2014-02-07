@@ -1,7 +1,7 @@
 #ifndef CON_BAMBOOFOREST_HPP
 #define CON_BAMBOOFOREST_HPP
 
-#include "Core/Entity.hpp"
+#include "jam-engine/Core/Entity.hpp"
 
 namespace con
 {

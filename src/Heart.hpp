@@ -1,7 +1,7 @@
 #ifndef CON_HEART_HPP
 #define CON_HEART_HPP
 
-#include "Core/Entity.hpp"
+#include "jam-engine/Core/Entity.hpp"
 
 namespace con
 {

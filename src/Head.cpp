@@ -1,9 +1,9 @@
 #include "Head.hpp"
 
-#include "Core/Game.hpp"
-#include "Core/Level.hpp"
-#include "Utility/Random.hpp"
-#include "Utility/Trig.hpp"
+#include "jam-engine/Core/Game.hpp"
+#include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Utility/Random.hpp"
+#include "jam-engine/Utility/Trig.hpp"
 #include "ThrownWeapon.hpp"
 #include "Blood.hpp"
 #include "Scoreboard.hpp"

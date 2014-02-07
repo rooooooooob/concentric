@@ -1,7 +1,7 @@
 #ifndef CON_HEAD_HPP
 #define CON_HEAD_HPP
 
-#include "Core/Entity.hpp"
+#include "jam-engine/Core/Entity.hpp"
 #include "Player.hpp"
 
 namespace con

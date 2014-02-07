@@ -2,7 +2,7 @@
 #define CON_SCENERY_HPP
 
 #include <SFML/Graphics/Sprite.hpp>
-#include "Core/Entity.hpp"
+#include "jam-engine/Core/Entity.hpp"
 
 namespace con
 {

@@ -4,9 +4,9 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "Core/Entity.hpp"
-#include "Graphics/Animation.hpp"
-#include "Core/Controller.hpp"
+#include "jam-engine/Core/Entity.hpp"
+#include "jam-engine/Graphics/Animation.hpp"
+#include "jam-engine/Core/Controller.hpp"
 #include "PlayerConfig.hpp"
 #include "Scoreboard.hpp"
 

@@ -1,7 +1,7 @@
 #ifndef CON_PLAYERCONFIG_HPP
 #define CON_PLAYERCONFIG_HPP
 
-#include "Core/Controller.hpp"
+#include "jam-engine/Core/Controller.hpp"
 
 namespace con
 {
@@ -23,12 +23,13 @@ struct PlayerConfig
 		Samurai,
 		Ninja
 	};
-	PlayerConfig(Sword sword, Thrown thrown, Type type, int team, const je::Controller& controller)
+	PlayerConfig(Sword sword, Thrown thrown, Type type, int team, const je::Controller& controller, int playerID)
 		:sword(sword)
 		,thrown(thrown)
 		,type(type)
 		,team(team)
 		,controller(controller)
+		,playerID(playerID)
 	{
 	}
 

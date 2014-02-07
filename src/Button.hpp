@@ -3,8 +3,8 @@
 
 #include <functional>
 #include <SFML/Graphics.hpp>
-#include "Core/Level.hpp"
-#include "Core/Input.hpp"
+#include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Core/Input.hpp"
 
 namespace con
 {

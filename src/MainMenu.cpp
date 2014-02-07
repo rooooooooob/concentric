@@ -1,7 +1,7 @@
 #include "MainMenu.hpp"
 #include "Button.hpp"
 #include "Arena.hpp"
-#include "Core/Controller.hpp"
+#include "jam-engine/Core/Controller.hpp"
 #include "PollButton.hpp"
 #include <iostream>
 
@@ -15,10 +15,10 @@ Menu::Menu (je::Game *game, Settings &settings) :
 {
 	start = new Window (sf::Vector2f (0, 0), sf::Vector2f (640, 480), this, sf::Color::Black);
 	current = start;
-	sf::IntRect dimensions= this->getCameraBounds();
+	sf::IntRect dimensions(0, 0, 640, 480);//this->getCameraBounds();
 
 	start->buttons.push_back(std::unique_ptr<Button>(new Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
-		sf::Vector2f (100, 50), "Start", this,
+		sf::Vector2f (100, 150), "Start", this,
 		[&](Button* b)
 		{
 			je::Game &g = b->getLevel()->getGame();
@@ -36,7 +36,7 @@ Menu::Menu (je::Game *game, Settings &settings) :
 		},
 		"start.png", settingswindow)));
 
-	settingswindow->buttons.push_back(std::unique_ptr<Button>(new Button(sf::Vector2f((getCameraBounds().width/2) - 50, 125),
+	settingswindow->buttons.push_back(std::unique_ptr<Button>(new Button(sf::Vector2f((dimensions.width/2) - 50, 125),
 		sf::Vector2f (100, 50), "Add player", this,
 		[&](Button *b)
 		{
@@ -105,7 +105,7 @@ void Menu::addPlayer()
 	else
 	{
 		settings.addPlayer();
-		settingswindow->buttons.push_back(std::unique_ptr<Button>(new PollButton(sf::Vector2f ((getCameraBounds().width/2) - 50, 200 + settings.getNumberOfPlayers() * 75),
+		settingswindow->buttons.push_back(std::unique_ptr<Button>(new PollButton(sf::Vector2f ((getWidth()/2) - 50, 200 + settings.getNumberOfPlayers() * 75),
 			sf::Vector2f(100, 50), std::string("P") + (char)('0' + settings.getNumberOfPlayers()) + std::string(" Controls"), this,
 			[&](Button *b)
 			{

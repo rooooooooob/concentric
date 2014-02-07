@@ -2,8 +2,8 @@
 
 
 #include <sstream>
-#include "Core/Level.hpp"
-#include "Core/Game.hpp"
+#include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Core/Game.hpp"
 
 namespace con
 {

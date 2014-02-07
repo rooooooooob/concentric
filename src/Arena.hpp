@@ -1,10 +1,10 @@
 #ifndef CON_ARENA_HPP
 #define CON_ARENA_HPP
 
-#include "Core/Level.hpp"
-#include "Core/Input.hpp"
+#include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Core/Input.hpp"
 #include "Window.hpp"
-#include "Core/Controller.hpp"
+#include "jam-engine/Core/Controller.hpp"
 #include "Settings.hpp"
 #include "Scoreboard.hpp"
 
