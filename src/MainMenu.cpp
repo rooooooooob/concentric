@@ -18,7 +18,7 @@ Menu::Menu (je::Game *game, Settings &settings) :
 	sf::IntRect dimensions(0, 0, 640, 480);//this->getCameraBounds();
 
 	start->buttons.push_back(std::unique_ptr<Button>(new Button (sf::Vector2f ((dimensions.width/2) - 50, (dimensions.height/2) - 25),
-		sf::Vector2f (100, 150), "Start", this,
+		sf::Vector2f (100, 50), "Start", this,
 		[&](Button* b)
 		{
 			je::Game &g = b->getLevel()->getGame();

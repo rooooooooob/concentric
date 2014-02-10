@@ -37,7 +37,7 @@ void Head::damage(float amount, const PlayerConfig *source)
 	if (health <= 0 && state == State::Capitated)
 	{
 		state = State::Decapitated;
-		scores.reportScore(source);
+		scores.reportKill(*source, owner.getConfig());
 	}
 }
 
@@ -70,7 +70,7 @@ void Head::onUpdate()
 					{
 						level->addEntity(new Blood(level,
 										 twep.getPos(),
-										 je::lengthdir(je::randomf(je::distance(twep.getVelocity()) + 2.f),
+										 je::lengthdir(je::randomf(je::length(twep.getVelocity()) + 2.f),
 													   je::direction(twep.getVelocity()) - 9 + je::randomf(18)))
 						);
 					}

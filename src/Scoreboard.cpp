@@ -1,54 +1,95 @@
 #include "Scoreboard.hpp"
-#include <iostream>
+
+#include "jam-engine/Utility/Assert.hpp"
 
 namespace con
 {
 
-Scoreboard::Scoreboard ()
+Scoreboard::Scoreboard(const std::function<void()>& onScoreCallback)
+	:teamIDs()
+	,scores()
+	,onScoreCallback(onScoreCallback)
 {
-
 }
 
-void Scoreboard::addPlayer (int team)
+/*			mutators			*/
+
+void Scoreboard::registerPlayer(const PlayerConfig& player)
 {
-	std::cout << "size: " << teamList.size();
-	teamList[team].push_back (0);
-	std::cout << "\nplayer added";
+	scores[player.playerID] = Score();
+	teamIDs[player.team].push_back(player.playerID);
 }
 
-void Scoreboard::addTeam ()
+void Scoreboard::unregisterPlayer(const PlayerConfig& player)
 {
-	teamList.push_back (Team());
+	JE_ASSERT_MSG(scores.count(player.playerID), "Trying to unregister player who was never registered");
+	PlayerIDList& playerIDs = teamIDs[player.team];
+	for (PlayerID& playerID : playerIDs)
+	{
+		if (playerID == player.playerID)
+		{
+			playerID = playerIDs.back();
+			playerIDs.pop_back();
+			break;
+		}
+	}
 }
 
-void Scoreboard::removePlayer (int team)
+void Scoreboard::reportKill(const PlayerConfig& killer, const PlayerConfig& victim)
 {
-	teamList[team].pop_back();
+	++scores[killer.playerID].kills;
+	++scores[victim.playerID].deaths;
+	onScoreCallback();
 }
 
-void Scoreboard::removeTeam ()
+void Scoreboard::reportSuicide(const PlayerConfig& player)
 {
-	teamList.pop_back ();
+	++scores[player.playerID].suicides;
+	onScoreCallback();
 }
 
-void Scoreboard::reportScore (const PlayerConfig* p)
+
+/*			accessors			*/
+
+int Scoreboard::numberOfTeams() const
 {
-	teamList[p->team][p->playerID]++;
+	return teamIDs.size();
 }
 
-int Scoreboard::numberOfTeams () const
+int Scoreboard::numberOfPlayers() const
 {
-	return teamList.size();
+	int total = 0;
+	for (auto& ids : teamIDs)
+		total += ids.second.size();
+	return total;
 }
 
-int Scoreboard::numberOfPlayers (int team) const
+const Scoreboard::Score& Scoreboard::getPlayerScore(PlayerID player) const
 {
-	return teamList[team].size();
+	return scores.at(player);
 }
 
-int Scoreboard::getPlayerScore (int team, int player) const
+Scoreboard::Score Scoreboard::calculateTeamScore(TeamID team) const
 {
-	return teamList[team][player];
+	Score teamScore;
+
+	auto it = teamIDs.find(team);
+	JE_ASSERT(it != teamIDs.end());
+	for (PlayerID playerID : it->second)
+	{
+		auto scoreIt = scores.find(playerID);
+		JE_ASSERT(scoreIt != scores.end());
+		teamScore.kills += scoreIt->second.kills;
+		teamScore.deaths += scoreIt->second.deaths;
+		teamScore.suicides += scoreIt->second.suicides;
+	}
+
+	return teamScore;
+}
+
+const Scoreboard::TeamMap& Scoreboard::getTeamMap() const
+{
+	return teamIDs;
 }
 
 }

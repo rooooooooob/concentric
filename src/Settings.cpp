@@ -1,5 +1,7 @@
 #include "Settings.hpp"
 
+#include "jam-engine/Core/GamepadPredefs.hpp"
+
 namespace con
 {
 
@@ -23,10 +25,10 @@ void Settings::defaultControlsX360(je::Controller& input)
 {
 	input.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
 	input.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
-	input.addKeybind("jump", je::Controller::Bind(4));
-	input.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
-	input.addKeybind("swing", je::Controller::Bind(sf::Joystick::Axis::Z, true));
-	input.addKeybind("throw", je::Controller::Bind(5));
+	input.addKeybind("jump", je::Binds::X360::DPadUp);
+	input.addKeybind("jump", je::Binds::X360::LB);
+	input.addKeybind("swing", je::Binds::X360::RT);
+	input.addKeybind("throw", je::Binds::X360::RB);
 
 	input.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::U));
 	input.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
@@ -70,7 +72,7 @@ void Settings::addPlayer()
 	));
 	if (configs.size() > 1)
 	{
-		defaultControlsPS3(configs.back().controller);
+		defaultControlsX360(configs.back().controller);
 		configs.back().thrown = PlayerConfig::Thrown::Knife;
 	}
 	else

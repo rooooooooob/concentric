@@ -87,7 +87,7 @@ void Player::damage(float amount, const PlayerConfig *source)
 
 		health = 0;
 		if (state != State::Decapitated && source)
-			scores.reportScore(source);
+			scores.reportKill(*source, config);
 		this->reset();
 	}
 }
@@ -229,7 +229,7 @@ void Player::onUpdate()
 				{
 					level->addEntity(new Blood(level,
 									 twep.getPos(),
-									 je::lengthdir(je::randomf(je::distance(twep.getVelocity()) + 2.f),
+									 je::lengthdir(je::randomf(je::length(twep.getVelocity()) + 2.f),
 					                               je::direction(twep.getVelocity()) - 9 + je::randomf(18)))
 					);
 				}

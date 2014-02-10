@@ -1,18 +1,22 @@
 #include "Arena.hpp"
-#include "jam-engine/Core/Game.hpp"
 
 #include <iostream>
-#include <sstream>
+
 #include <cstdlib>
+#include <functional>
+#include <sstream>
+
+#include "jam-engine/Core/Controller.hpp"
 #include "jam-engine/Core/Game.hpp"
-#include "SolidGround.hpp"
+#include "jam-engine/Utility/Random.hpp"
+
+#include "BambooForest.hpp"
+#include "Player.hpp"
+#include "PlayerConfig.hpp"
 #include "Scenery.hpp"
 #include "Scoreboard.hpp"
-#include "jam-engine/Core/Controller.hpp"
-#include "PlayerConfig.hpp"
-#include "Player.hpp"
-#include "BambooForest.hpp"
-#include "jam-engine/Utility/Random.hpp"
+#include "SolidGround.hpp"
+
 
 namespace con
 {
@@ -20,11 +24,8 @@ namespace con
 Arena::Arena(je::Game *game, const Settings& settings)
 	:je::Level(game, 640, 480)
 	,settings(settings)
+	,scores(std::bind(&Arena::updateScores, this))
 {
-	scores.addTeam ();
-	scores.addPlayer (0);
-	scores.addTeam ();
-	scores.addPlayer (1);
 	const int groundHeight = getHeight() - 128;
 	int yoffset = 0;
 	for (int i = 0; i < getWidth(); i += 32)
@@ -58,7 +59,11 @@ Arena::Arena(je::Game *game, const Settings& settings)
 
 	int gapSize = getWidth() / (settings.getNumberOfPlayers() + 1);
 	for (int i = 0; i < settings.getNumberOfPlayers(); ++i)
-		this->addEntity(new Player(this, (i + 1) * gapSize, getHeight() / 2, settings.getPlayerConfig(i), scores));
+	{
+		Player *player = new Player(this, (i + 1) * gapSize, getHeight() / 2, settings.getPlayerConfig(i), scores);
+		scores.registerPlayer(player->getConfig());
+		this->addEntity(player);
+	}
 
 	//	set up background gradient
 	bgVertices[0].color = bgVertices[1].color = sf::Color(11, 26, 34);
@@ -93,32 +98,26 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	//	init all score text crap (jesus christ max why would you recreate this every frame?)
 	if (!font.loadFromFile ("resources/DOMOAN__.ttf"))
 		std::cerr << "bad font file";
-	scoreText.setFont(font);
-	scoreText.setCharacterSize(20);
-	scoreText.setColor (sf::Color::White);
+	scoreTexts.resize(settings.getNumberOfPlayers(), sf::Text());
+	for (sf::Text& scoreText : scoreTexts)
+	{
+		scoreText.setFont(font);
+		scoreText.setCharacterSize(20);
+		scoreText.setColor(sf::Color::White);
+	}
 
 	//	make sure heads are updated after players! (or else the heads lag behind)
 	this->setSpecificOrderEntitiesPost({"Head"});
+
+
+
+	this->updateScores();
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const
 {
-	int n = scores.numberOfTeams();
-	for (int i = 0; i < n; ++i)
-	{
-		std::stringstream ss;
-		ss << "Team " << i + 1;
-		int m = scores.numberOfPlayers(i);
-		for (int j = 0; j < m; ++j)
-		{
-			ss << "\n	Player " << j + 1 << ": " << scores.getPlayerScore (i, j);
-		}
-		scoreText.setString(ss.str());
-		const int gapSpaceLeft = getWidth() - n * scoreText.getLocalBounds().width - 16;
-		scoreText.setPosition((gapSpaceLeft / (n - 1)) * i + scoreText.getLocalBounds().width / 2, 8);
-
+	for (const sf::Text& scoreText : scoreTexts)
 		target.draw(scoreText);
-	}
 }
 
 void Arena::onUpdate()
@@ -153,6 +152,31 @@ void Arena::createTiles(const std::string& filename, int tileWidth, int tileHeig
 void Arena::transformTiles(const std::string& layerName, int tilesAcross, int tilesHigh, unsigned  **tiles)
 {
 }
+
+
+void Arena::updateScores()
+{
+	const Scoreboard::TeamMap& teamIDs = scores.getTeamMap();
+	const int n = teamIDs.size();
+
+	int i = 0;
+	for (const auto& playerIDs : teamIDs)
+	{
+		std::stringstream ss;
+		ss << "Team " << playerIDs.first << " - " << scores.calculateTeamScore(playerIDs.first).score();
+		for (Scoreboard::PlayerID playerID : playerIDs.second)
+		{
+			const Scoreboard::Score& score = scores.getPlayerScore(playerID);
+			ss << "\n	Player " << playerID << ": " << score.score();// << " ( " << score.kills << "/ " << score.deaths << " / " << score.suicides << ")";
+		}
+		scoreTexts[i].setString(ss.str());
+		const int gapSpaceLeft = getWidth() - n * scoreTexts[i].getLocalBounds().width - 16;
+		scoreTexts[i].setPosition((gapSpaceLeft / (n - 1)) * i + scoreTexts[i].getLocalBounds().width / 2, 8);
+
+		++i;
+	}
+}
+
 
 
 }

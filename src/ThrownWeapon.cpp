@@ -70,7 +70,7 @@ void ThrownWeapon::onUpdate()
 	switch (config.thrown)
 	{
 		case PlayerConfig::Thrown::Shuriken:
-			sprite.rotate(je::distance(velocity) * 2);
+			sprite.rotate(je::length(velocity) * 2);
 			break;
 		case PlayerConfig::Thrown::Knife:
 			sprite.setRotation(-je::direction(velocity));
@@ -80,7 +80,7 @@ void ThrownWeapon::onUpdate()
 	sprite.setPosition(pos);
 	velocity.y += gravity;
 	pos += velocity;
-
+	
 	if (pos.x < 0 || pos.x > level->getWidth() || pos.y < 0 || pos.y > level->getHeight())
 		this->destroy();
 	if (level->testCollision(this, "SolidGround"))
