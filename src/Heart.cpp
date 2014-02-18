@@ -26,13 +26,13 @@ void Heart::onUpdate()
 	if (!level->testCollision(this, "SolidGround", veloc.x, veloc.y))
 	{
 		veloc.y += 0.1;
-		pos += veloc;
+		transform().move(veloc);
 		sprite.rotate(0.1);
 	}
-	if (pos.x < -32 || pos.x > level->getWidth() + 32)
+	if (getPos().x < -32 || getPos().x > level->getWidth() + 32)
 		this->destroy();
-	level->addEntity(new Blood(level, pos, je::lengthdir((je::randomf(3) + 2) * (sin(timer / 10.f) + 1) / 2, 75 + rand() % 90), 2));
-	sprite.setPosition(pos);
+	level->addEntity(new Blood(level, getPos(), je::lengthdir((je::randomf(3) + 2) * (sin(timer / 10.f) + 1) / 2, 75 + rand() % 90), 2));
+	sprite.setPosition(getPos());
 	if (sin(timer / 10.f) > 0)
 		sprite.setTexture(out);
 	else

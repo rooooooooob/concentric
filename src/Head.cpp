@@ -22,7 +22,7 @@ Head::Head(je::Level *level, int x, int y, Player& owner, Scoreboard& scores)
 	,stuck(false)
 {
 	sprite.setOrigin(3, 4);
-	sprite.setPosition(pos);
+	sprite.setPosition(getPos());
 	this->setDepth(-5);
 }
 
@@ -77,7 +77,7 @@ void Head::onUpdate()
 					twep.destroy();
 				}
 			}
-			pos = owner.getPos();
+			transform().setPosition(owner.getPos());
 		}
 			break;
 		case State::Decapitated:
@@ -90,16 +90,16 @@ void Head::onUpdate()
 				else
 				{
 					velocity.y += 0.06;
-					pos += velocity;
+					transform().move(velocity);
 					sprite.rotate(5);
 				}
-				if (pos.x < -32 || pos.x > level->getWidth() + 32)
+				if (getPos().x < -32 || getPos().x > level->getWidth() + 32)
 					this->destroy();
 			}
 			break;
 	}
 
-	sprite.setPosition(pos.x, pos.y - 4);
+	sprite.setPosition(getPos().x, getPos().y - 4);
 	sprite.setScale(owner.getFacing(), 1);
 }
 

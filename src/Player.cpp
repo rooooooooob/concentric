@@ -1,19 +1,23 @@
 #include "Player.hpp"
 
 #include <vector>
+
 #include "jam-engine/Core/Level.hpp"
 #include "jam-engine/Core/Game.hpp"
-#include "jam-engine/Utility/Trig.hpp"
-#include "Head.hpp"
-#include "ThrownWeapon.hpp"
-#include "Blood.hpp"
+#include "jam-engine/Utility/Math.hpp"
 #include "jam-engine/Utility/Random.hpp"
-#include "Heart.hpp"
+#include "jam-engine/Utility/Trig.hpp"
+
 #include "Attack.hpp"
+#include "Blood.hpp"
+#include "Head.hpp"
+#include "Heart.hpp"
 #include "PlayerResources.hpp"
+#include "ThrownWeapon.hpp"
+
 #include <iostream>
 
-const int RUNNING_ANIM_TIME = 11;
+const int RUNNING_ANIM_TIME = 23;
 
 namespace con
 {
@@ -24,7 +28,6 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,currentArmAnimation("sword")
 	,config(config)
 	,input(config.controller)
-	,gravity(0)
 	,armAngle(0)
 	,aimer(level->getGame().getTexManager().get("aimer.png"))
 	,aim(0, 0)
@@ -35,34 +38,36 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,head(nullptr)
 	,health(100)
 	,maxhealth(health)
+	,veloc(0, 0)
+	,onGround(false)
 {
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
 	{
-		sprite.setPosition(pos);
+		sprite.setPosition(getPos());
 		sprite.setOrigin(12, 0);
 	});
 	animations["jumping"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_jumping.png"), 24, 24, 0));
 	animations["jumping"]->apply([&](sf::Sprite& sprite)
 	{
-		sprite.setPosition(pos);
+		sprite.setPosition(getPos());
 		sprite.setOrigin(12, 0);
 	});
 
 	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getSwingingArmSprite(config.sword)), 48, 32, 6, false));
 	armAnimations["melee"]->apply([&](sf::Sprite& sprite)
 	{
-		sprite.setPosition(pos);
+		sprite.setPosition(getPos());
 		sprite.setOrigin(24, 10);
 	});
 	armAnimations["throw"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getThrowingArmSprite(config.thrown)), 48, 32, 4, false));
 	armAnimations["throw"]->apply([&](sf::Sprite& sprite)
 	{
-		sprite.setPosition(pos);
+		sprite.setPosition(getPos());
 		sprite.setOrigin(24, 10);
 	});
 
-	head = new Head(level, pos.x, pos.y, *this, scores);
+	head = new Head(level, getPos().x, getPos().y, *this, scores);
 	level->addEntity(head);
 	this->setDepth(-6);
 
@@ -82,8 +87,8 @@ void Player::damage(float amount, const PlayerConfig *source)
 		//die here
 		int n = 16 + je::randomf(16);
         for (int i = 0; i < n; ++i)
-            level->addEntity(new Blood(level, pos, je::lengthdir(2 + je::randomf(3), je::choose({je::randomf(360), 45 + je::randomf(90)}))));
-        level->addEntity(new Heart(level, pos, je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
+            level->addEntity(new Blood(level, getPos(), je::lengthdir(2 + je::randomf(3), je::choose({je::randomf(360), 45 + je::randomf(90)}))));
+        level->addEntity(new Heart(level, getPos(), je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
 
 		health = 0;
 		if (state != State::Decapitated && source)
@@ -111,18 +116,24 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 void Player::onUpdate()
 {
 	//std::cout << "hp: " << health << " / " << maxhealth << std::endl;
-	aim.x = input.axisPos("aim_x", pos.x, level);
-	aim.y = input.axisPos("aim_y", pos.y, level);
+	aim.x = input.axisPos("aim_x", getPos().x, level);
+	aim.y = input.axisPos("aim_y", getPos().y, level);
 
-	const bool onGround = level->testCollision(this, "SolidGround", 0, gravity + 1);
+	//float newY = level->rayCastManually(this, "SolidGround", [](Entity*e)->bool{return true;}, sf::Vector2f(0, veloc.y)).y;
+
+	onGround = level->testCollision(this, "SolidGround", 0, veloc.y + 1);//newY == getPos().y;
 	if (onGround)
 	{
-		gravity = 0;
+		if (veloc.y > 0.f)
+		{
+			transform().setPosition(prevPos);
+			veloc.y = 0.f;
+		}
 	}
 	else
 	{
-		gravity += 0.3;
-		pos.y += gravity;
+		veloc.y += 0.3f;
+		transform().move(0.f, veloc.y);
 	}
 
 	if (state != State::Decapitated && head->getState() == Head::State::Decapitated)
@@ -185,7 +196,7 @@ void Player::onUpdate()
 			armAnimations[currentArmAnimation]->advanceFrame();
 			if (cooldown == 32)
 			{
-				level->addEntity(new ThrownWeapon(level, pos + je::lengthdir(12, armAngle), config, aim * 12.f));
+				level->addEntity(new ThrownWeapon(level, getPos() + je::lengthdir(12, armAngle), config, aim * 12.f));
 				state = State::AttackCooldown;
 			}
 			break;
@@ -195,7 +206,7 @@ void Player::onUpdate()
 			break;
 		case State::Decapitated:
 			attemptRunning(1.5f);
-			level->addEntity(new Blood(level, pos + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
+			level->addEntity(new Blood(level, getPos() + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
 			this->damage(3);//bleedout
 			break;
 		case State::AttackCooldown:
@@ -211,6 +222,7 @@ void Player::onUpdate()
 			//how?
 			break;
 	}
+
 	if (cooldown > 0)
 		--cooldown;
 
@@ -249,24 +261,24 @@ void Player::onUpdate()
 				const int n = je::randomf(15) + 3;
 				for (int i = 0; i < n; ++i)
 				{
-					level->addEntity(new Blood(level, pos, je::lengthdir(je::randomf(3 + je::randomf(9)), je::randomf(360)) - sf::Vector2f(0, 2)));
+					level->addEntity(new Blood(level, getPos(), je::lengthdir(je::randomf(3 + je::randomf(9)), je::randomf(360)) - sf::Vector2f(0, 2)));
 				}
 				atk.destroy();
 			}
 		}
 	}
 	//	to stop walking off map
-	if (pos.x < 32)
-		pos.x = 32;
-	if (pos.x > level->getWidth() - 32)
-		pos.x = level->getWidth() - 32;
+	if (getPos().x < 32)
+		transform().setPosition(32, getPos().y);
+	if (getPos().x > level->getWidth() - 32)
+		transform().setPosition(level->getWidth() - 32, getPos().y);
 	//	and then fix up the sprites
 	auto bodyAnim = animations.find(currentAnimation);
 	if (bodyAnim != animations.end())
 	{
 		bodyAnim->second->apply([&](sf::Sprite& sprite)
 		{
-			sprite.setPosition(pos.x, pos.y);
+			sprite.setPosition(getPos());
 			sprite.setScale(facing, 1);
 		});
 	}
@@ -277,19 +289,18 @@ void Player::onUpdate()
 	{
 		armAnim->second->apply([&](sf::Sprite& sprite)
 		{
-			sprite.setPosition(pos);
+			sprite.setPosition(getPos());
 			sprite.setScale(1, facing);
 			sprite.setRotation(-armAngle);
 		});
 	}
-	aimer.setPosition(pos + 64.f * aim);
+	aimer.setPosition(getPos() + 64.f * aim);
 }
 
 void Player::reset()
 {
 	health = maxhealth;
-	pos.x = je::random(level->getWidth());
-	pos.y = -32.f;
+	transform().setPosition(je::random(level->getWidth()), -32.f);
 	state = State::Idle;
 	currentAnimation = "running";
 	cooldown = 0;
@@ -297,74 +308,83 @@ void Player::reset()
 	{
 		head->destroy();
 	}
-	head = new Head(level, pos.x, pos.y, *this, scores);
+	head = new Head(level, getPos().x, getPos().y, *this, scores);
 	level->addEntity(head);
 }
 
 bool Player::attemptRunning(float rate)
 {
-	const float speed = 2;
-	const int highestWalkableSlope = 8;
+	const float highestWalkableSlopeRatio = 4.f;
+	const int highestWalkableSlope = highestWalkableSlopeRatio * abs(veloc.x);
+	const float horizontalAcceleration = 0.2;
+	const float maxHorizontalSpeed = 2.5 * rate;
 
 	bool moved = false;
 
 	if (input.isActionHeld("move_left") && !input.isActionHeld("move_right"))
 	{
-		for (int i = 0; i < highestWalkableSlope; ++i)
-		{
-			if (!level->testCollision(this, "SolidGround", -speed * rate, -i))
-			{
-				pos.x -= speed * rate;
-				pos.y -= i;
-				moved = true;
-				break;
-			}
-		}
-		if (moved)
-		{
-			animations[currentAnimation]->advanceFrame();
-			facing = Left;
-		}
+		facing = Left;
+		veloc.x -= horizontalAcceleration;
 	}
-	if (!moved && input.isActionHeld("move_right"))
+	else if (input.isActionHeld("move_right"))
+	{
+		facing = Right;
+		veloc.x += horizontalAcceleration;
+	}
+	else
+	{
+		const float friction = onGround ? 0.15 : 0.05;
+		if (veloc.x > friction)
+			veloc.x -= friction;
+		else if (veloc.x < -friction)
+			veloc.x += friction;
+		else
+			veloc.x = 0;
+	}
+	je::limit(veloc.x, -maxHorizontalSpeed, maxHorizontalSpeed);
+	
+	if (veloc.x > 0.1f || veloc.x < -0.1f)
 	{
 		for (int i = 0; i < highestWalkableSlope; ++i)
 		{
-			if (!level->testCollision(this, "SolidGround", speed * rate, -i))
+			if (!level->testCollision(this, "SolidGround", veloc.x, -i))
 			{
-				pos.x += speed * rate;
-				pos.y -= i;
+				transform().move(veloc.x, -i);
 				moved = true;
 				break;
 			}
 		}
-		if (moved)
+	}
+	if (moved)
+	{
+		for (int i = 0; i < abs(veloc.x); ++i)
 		{
 			animations[currentAnimation]->advanceFrame();
-			facing = Right;
 		}
 	}
+	std::cout << "moved: " << moved << std::endl;
 	return moved;
 }
 
 bool Player::attemptJumping()
 {
-	if (level->testCollision(this, "SolidGround", 0, gravity + 1))
+	if (level->testCollision(this, "SolidGround", 0, veloc.y + 1))
 	{
 		if (input.isActionPressed("jump"))
 		{
-			gravity = -5;
+			transform().move(0, -5);
+			veloc.y = -5;
 			return true;
 		}
 	}
 	return false;
 }
 
-bool Player::attemptSwingWeapon()
+bool Player::attemptSwingWeapon()	
 {
 	if (input.isActionPressed("swing"))
 	{
-		level->addEntity(new Attack(level, &pos, sf::Vector2f(-6, -16) + je::lengthdir(4, armAngle), sf::Vector2i(12, 12), config, 32, 35, sf::Vector2f(facing * 0.4, 0.25)));
+		level->addEntity(new Attack(level, &getPos(), sf::Vector2f(-6, -16) + je::lengthdir(4, armAngle), sf::Vector2i(12, 12), config, 32, 35, sf::Vector2f(facing * 0.4, 0.25)));
 		cooldown = 64;
 		return true;
 	}

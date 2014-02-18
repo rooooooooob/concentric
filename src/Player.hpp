@@ -67,7 +67,6 @@ private:
 	sf::Sprite aimer;
 	const je::Controller& input;
 	const PlayerConfig& config;
-	float gravity;
 	float armAngle;
 	sf::Vector2f aim;
 	Facing facing;
@@ -77,6 +76,8 @@ private:
 	Head *head;
 	float health;
 	float maxhealth;
+	sf::Vector2f veloc;
+	bool onGround;
 };
 
 }

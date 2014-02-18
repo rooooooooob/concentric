@@ -8,7 +8,7 @@ namespace con
 {
 
 ThrownWeapon::ThrownWeapon(je::Level *level, const sf::Vector2f& pos, const PlayerConfig& config, const sf::Vector2f& velocity)
-	:je::Entity(level, "ThrownWeapon", pos, sf::Vector2i(7, 7), sf::Vector2i(-3, -3))
+	:je::Entity(level, "ThrownWeapon", pos, sf::Vector2i(8, 3), sf::Vector2i(-3, -3))
 	,sprite()
 	,config(config)
 	,velocity(velocity)
@@ -73,15 +73,16 @@ void ThrownWeapon::onUpdate()
 			sprite.rotate(je::length(velocity) * 2);
 			break;
 		case PlayerConfig::Thrown::Knife:
+			transform().setRotation(-je::direction(velocity));
 			sprite.setRotation(-je::direction(velocity));
 			gravity += 0.01;
 			break;
 	}
-	sprite.setPosition(pos);
+	sprite.setPosition(getPos());
 	velocity.y += gravity;
-	pos += velocity;
+	transform().move(velocity);
 	
-	if (pos.x < 0 || pos.x > level->getWidth() || pos.y < 0 || pos.y > level->getHeight())
+	if (getPos().x < 0 || getPos().x > level->getWidth() || getPos().y < 0 || getPos().y > level->getHeight())
 		this->destroy();
 	if (level->testCollision(this, "SolidGround"))
 		this->destroy();

@@ -17,6 +17,10 @@
 #include "Scoreboard.hpp"
 #include "SolidGround.hpp"
 
+//#include "PolyTest.hpp"
+//#include <memory>
+//#include "jam-engine/Core/DetailedMask.hpp"
+//#include "jam-engine/Core/PolygonMask.hpp"
 
 namespace con
 {
@@ -112,6 +116,22 @@ Arena::Arena(je::Game *game, const Settings& settings)
 
 
 	this->updateScores();
+
+	//for (int i = 0; i < 2; ++i)
+	//{
+	//addEntity(new PolyTest(
+	//	this,
+	//	sf::Vector2f(200, 100),
+	//	std::unique_ptr<je::DetailedMask>(
+	//		new je::PolygonMask({
+	//				sf::Vector2f(-32, 24),
+	//				sf::Vector2f(32, 24),
+	//				sf::Vector2f(0, -24)
+	//			})
+	//	)
+	//));
+
+	//}
 }
 
 void Arena::drawGUI(sf::RenderTarget& target) const

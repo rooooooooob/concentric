@@ -37,12 +37,12 @@ void Blood::onUpdate()
 		else
 		{
 			veloc.y += 0.2;
-			pos += veloc;
+			transform().move(veloc);
 
-			if (pos.x < -16 || pos.x > level->getWidth() + 16)
+			if (getPos().x < -16 || getPos().x > level->getWidth() + 16)
 				this->destroy();
 
-			sprite.setPosition(pos);
+			sprite.setPosition(getPos());
 		}
 	}
 }
