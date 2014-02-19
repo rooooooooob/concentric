@@ -10,17 +10,17 @@ struct PlayerConfig
 {
 	enum class Sword
 	{
-		Katana,
+		Katana = 0,
 		Spear
 	};
 	enum class Thrown
 	{
-		Shuriken,
+		Shuriken = 0,
 		Knife
 	};
 	enum class Type
 	{
-		Samurai,
+		Samurai = 0,
 		Ninja
 	};
 	PlayerConfig(Sword sword, Thrown thrown, Type type, int team, const je::Controller& controller, int playerID)

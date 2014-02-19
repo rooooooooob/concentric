@@ -2,18 +2,44 @@
 
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Core/Level.hpp"
+#include "jam-engine/Physics/CollisionMaskManager.hpp"
+#include "jam-engine/Physics/PolygonMask.hpp"
+#include "jam-engine/Utility/Random.hpp"
 #include "jam-engine/Utility/Trig.hpp"
 
 namespace con
 {
 
+static je::DetailedMask::MaskRef getMask(PlayerConfig::Thrown type, je::Level *level)
+{
+	static bool loaded = false;
+	if (!loaded)
+	{
+		je::CollisionMaskManager& db = level->getGame().masks();
+		je::DetailedMask::MaskRef mask(new je::PolygonMask(8, 3));
+		db.add("Knife", mask);
+		mask.reset(new je::PolygonMask(4, 4));
+		db.add("Shuriken", mask);
+		loaded = true;
+	}
+	switch (type)
+	{
+		case PlayerConfig::Thrown::Knife:
+			return level->getGame().masks().create("Knife");
+		case PlayerConfig::Thrown::Shuriken:
+			return level->getGame().masks().create("Shuriken");
+	}
+}
+
+
 ThrownWeapon::ThrownWeapon(je::Level *level, const sf::Vector2f& pos, const PlayerConfig& config, const sf::Vector2f& velocity)
-	:je::Entity(level, "ThrownWeapon", pos, sf::Vector2i(8, 3), sf::Vector2i(-3, -3))
+	:je::Entity(level, "ThrownWeapon", pos, getMask(config.thrown, level))
 	,sprite()
 	,config(config)
 	,velocity(velocity)
 	,gravity(0)
 	,damage(0)
+	,wasBlocked(false)
 
 {
 	je::TexManager& texMan = level->getGame().getTexManager();
@@ -78,6 +104,13 @@ void ThrownWeapon::onUpdate()
 			gravity += 0.01;
 			break;
 	}
+
+	if (!wasBlocked && (level->testCollision(this, "ThrownWeapon") || level->testCollision(this, "Attack")))
+	{
+		velocity = je::lengthdir(je::randomf(7.f), 50.f + je::randomf(80.f));
+		wasBlocked = true;
+	}
+
 	sprite.setPosition(getPos());
 	velocity.y += gravity;
 	transform().move(velocity);

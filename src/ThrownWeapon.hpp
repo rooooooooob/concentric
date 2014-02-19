@@ -33,6 +33,7 @@ private:
 	sf::Vector2f velocity;
 	float gravity;
 	float damage;
+	bool wasBlocked;
 };
 
 }

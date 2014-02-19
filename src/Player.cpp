@@ -362,7 +362,6 @@ bool Player::attemptRunning(float rate)
 			animations[currentAnimation]->advanceFrame();
 		}
 	}
-	std::cout << "moved: " << moved << std::endl;
 	return moved;
 }
 
