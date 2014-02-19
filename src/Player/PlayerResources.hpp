@@ -1,7 +1,7 @@
 #ifndef CON_PLAYERRESOURCES_HPP
 #define CON_PLAYERRESOURCES_HPP
 
-#include "PlayerConfig.hpp"
+#include "Player/PlayerConfig.hpp"
 
 namespace con
 {

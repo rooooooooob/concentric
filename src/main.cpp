@@ -1,6 +1,6 @@
 #include "jam-engine/Core/Game.hpp"
-#include "Arena.hpp"
-#include "MainMenu.hpp"
+#include "Level/Arena.hpp"
+#include "UI/MainMenu.hpp"
 #include "jam-engine/Graphics/TexManager.hpp"
 #include "Settings.hpp"
 

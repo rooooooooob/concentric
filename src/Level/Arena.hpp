@@ -3,7 +3,7 @@
 
 #include "jam-engine/Core/Level.hpp"
 #include "jam-engine/Core/Input.hpp"
-#include "Window.hpp"
+#include "UI/Window.hpp"
 #include "jam-engine/Core/Controller.hpp"
 #include "Settings.hpp"
 #include "Scoreboard.hpp"

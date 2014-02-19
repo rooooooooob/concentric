@@ -2,7 +2,7 @@
 #define CON_ATTACK_HPP
 
 #include "jam-engine/Core/Entity.hpp"
-#include "PlayerConfig.hpp"
+#include "Player/PlayerConfig.hpp"
 
 namespace con
 {

@@ -1,4 +1,4 @@
-#include "Player.hpp"
+#include "Player/Player.hpp"
 
 #include <vector>
 
@@ -8,12 +8,12 @@
 #include "jam-engine/Utility/Random.hpp"
 #include "jam-engine/Utility/Trig.hpp"
 
-#include "Attack.hpp"
-#include "Blood.hpp"
-#include "Head.hpp"
-#include "Heart.hpp"
-#include "PlayerResources.hpp"
-#include "ThrownWeapon.hpp"
+#include "Player/Attack.hpp"
+#include "Player/Blood.hpp"
+#include "Player/Head.hpp"
+#include "Player/Heart.hpp"
+#include "Player/PlayerResources.hpp"
+#include "Player/ThrownWeapon.hpp"
 
 #include <iostream>
 

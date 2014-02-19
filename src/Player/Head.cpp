@@ -1,13 +1,13 @@
-#include "Head.hpp"
+#include "Player/Head.hpp"
 
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Core/Level.hpp"
 #include "jam-engine/Utility/Random.hpp"
 #include "jam-engine/Utility/Trig.hpp"
-#include "ThrownWeapon.hpp"
-#include "Blood.hpp"
+#include "Player/ThrownWeapon.hpp"
+#include "Player/Blood.hpp"
 #include "Scoreboard.hpp"
-#include "PlayerResources.hpp"
+#include "Player/PlayerResources.hpp"
 
 namespace con
 {

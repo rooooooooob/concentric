@@ -7,7 +7,7 @@
 #include "jam-engine/Core/Entity.hpp"
 #include "jam-engine/Graphics/Animation.hpp"
 #include "jam-engine/Core/Controller.hpp"
-#include "PlayerConfig.hpp"
+#include "Player/PlayerConfig.hpp"
 #include "Scoreboard.hpp"
 
 namespace con

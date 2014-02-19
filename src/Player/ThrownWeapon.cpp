@@ -1,4 +1,4 @@
-#include "ThrownWeapon.hpp"
+#include "Player/ThrownWeapon.hpp"
 
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Core/Level.hpp"

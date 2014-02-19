@@ -1,7 +1,7 @@
-#include "Heart.hpp"
+#include "Player/Heart.hpp"
 
 #include <cmath>
-#include "Blood.hpp"
+#include "Player/Blood.hpp"
 #include "jam-engine/Core/Level.hpp"
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Utility/Trig.hpp"

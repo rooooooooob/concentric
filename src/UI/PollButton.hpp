@@ -1,8 +1,8 @@
 #ifndef CON_POLLBUTTON_HPP
 #define CON_POLLBUTTON_HPP
 
-#include "Window.hpp"
-#include "PlayerConfig.hpp"
+#include "UI/Window.hpp"
+#include "Player/PlayerConfig.hpp"
 
 namespace con
 {

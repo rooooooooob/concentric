@@ -1,8 +1,8 @@
-#include "MainMenu.hpp"
-#include "Button.hpp"
-#include "Arena.hpp"
+#include "UI/MainMenu.hpp"
+#include "UI/Button.hpp"
+#include "Level/Arena.hpp"
 #include "jam-engine/Core/Controller.hpp"
-#include "PollButton.hpp"
+#include "UI/PollButton.hpp"
 #include <iostream>
 
 namespace con

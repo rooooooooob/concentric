@@ -5,7 +5,7 @@
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Core/Controller.hpp"
 
-#include "PlayerConfig.hpp"
+#include "Player/PlayerConfig.hpp"
 
 namespace con
 {

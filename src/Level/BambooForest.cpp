@@ -1,4 +1,4 @@
-#include "BambooForest.hpp"
+#include "Level/BambooForest.hpp"
 
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Core/Level.hpp"

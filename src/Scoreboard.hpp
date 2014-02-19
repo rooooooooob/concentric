@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include "PlayerConfig.hpp"
+#include "Player/PlayerConfig.hpp"
 
 namespace con
 {

@@ -1,4 +1,4 @@
-#include "PlayerResources.hpp"
+#include "Player/PlayerResources.hpp"
 
 namespace con
 {

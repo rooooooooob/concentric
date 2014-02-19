@@ -1,4 +1,4 @@
-#include "Arena.hpp"
+#include "Level/Arena.hpp"
 
 #include <iostream>
 
@@ -10,12 +10,12 @@
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Utility/Random.hpp"
 
-#include "BambooForest.hpp"
-#include "Player.hpp"
-#include "PlayerConfig.hpp"
-#include "Scenery.hpp"
+#include "Level/BambooForest.hpp"
+#include "Player/Player.hpp"
+#include "Player/PlayerConfig.hpp"
+#include "Level/Scenery.hpp"
 #include "Scoreboard.hpp"
-#include "SolidGround.hpp"
+#include "Level/SolidGround.hpp"
 
 //#include "PolyTest.hpp"
 //#include <memory>

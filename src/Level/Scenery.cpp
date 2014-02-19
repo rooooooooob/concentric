@@ -1,4 +1,4 @@
-#include "Scenery.hpp"
+#include "Level/Scenery.hpp"
 
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Core/Level.hpp"

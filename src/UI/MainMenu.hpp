@@ -3,7 +3,7 @@
 
 #include "jam-engine/Core/Level.hpp"
 #include "jam-engine/Core/Game.hpp"
-#include "Window.hpp"
+#include "UI/Window.hpp"
 #include "Settings.hpp"
 #include <vector>
 #include <functional>
