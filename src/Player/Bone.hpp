@@ -20,9 +20,9 @@ public:
 
 	void addChild(Bone *child);
 
-	sf::Transformable boneTransform();
+	sf::Transformable& boneTransform();
 
-	const sf::Transformable getBoneTransform() const;
+	const sf::Transformable& getBoneTransform() const;
 
 private:
 
@@ -39,6 +39,8 @@ private:
 	sf::Sprite limb;
 	//sf::Sprite connector; TODO: implement this you faglord
 	sf::Transformable mBoneTransform;
+	int length;
+	int thickness;
 };
 
 }

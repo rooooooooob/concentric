@@ -4,16 +4,23 @@
 #include <map>
 #include <string>
 #include <memory>
+
 #include "jam-engine/Core/Entity.hpp"
 #include "jam-engine/Graphics/Animation.hpp"
 #include "jam-engine/Core/Controller.hpp"
+
+#include "Player/BoneAnimation.hpp"
 #include "Player/PlayerConfig.hpp"
 #include "Scoreboard.hpp"
+
+
 
 namespace con
 {
 
 class Head;
+
+class Bone;
 
 class Player : public je::Entity
 {
@@ -78,6 +85,8 @@ private:
 	float maxhealth;
 	sf::Vector2f veloc;
 	bool onGround;
+	Bone *arm, *forearm, *sword;
+	BoneAnimation swingSword;
 };
 
 }

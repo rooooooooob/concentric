@@ -3,6 +3,7 @@
 #include "jam-engine/Core/Game.hpp"
 #include "jam-engine/Core/Level.hpp"
 #include "jam-engine/Utility/Assert.hpp"
+#include "jam-engine/Utility/Trig.hpp"
 
 #include "Player/Player.hpp"
 
@@ -10,12 +11,15 @@ namespace con
 {
 
 Bone::Bone(je::Level *level, Player& owner, int length, int thickness, const std::string& filename)
-	:je::Entity(level, "Bone", sf::Vector2f(0, 0), sf::Vector2i(length, thickness), sf::Vector2i(-(length>thickness?thickness:length)/2, -(length>thickness?thickness:length)/2))
+	:je::Entity(level, "Bone", sf::Vector2f(0.f, 0.f), sf::Vector2i(length, thickness))
 	,owner(owner)
 	,parent(nullptr)
 	,children()
 	,limb(level->getGame().getTexManager().get(filename))
+	,length(length)
+	,thickness(thickness)
 {
+	//mBoneTransform.setOrigin(0.f, thickness / 2.f);
 }
 
 void Bone::addChild(Bone *child)
@@ -25,12 +29,12 @@ void Bone::addChild(Bone *child)
 	children.push_back(child);
 }
 
-sf::Transformable Bone::boneTransform()
+sf::Transformable& Bone::boneTransform()
 {
 	return mBoneTransform;
 }
 
-const sf::Transformable Bone::getBoneTransform() const
+const sf::Transformable& Bone::getBoneTransform() const
 {
 	return mBoneTransform;
 }
@@ -56,7 +60,10 @@ void Bone::updateBoneTransform(sf::Vector2f pos, sf::Vector2f scale, sf::Vector2
 {
 	//	boneTransform() overrides anything done to the regular Enity transform
 	pos += mBoneTransform.getPosition();
-	scale += mBoneTransform.getScale();
+	if (parent)
+		pos += je::lengthdir(scale.x * parent->length, -angle);
+	scale.x *= mBoneTransform.getScale().x;
+	scale.y *= mBoneTransform.getScale().y;
 	origin += mBoneTransform.getOrigin();
 	angle += mBoneTransform.getRotation();
 

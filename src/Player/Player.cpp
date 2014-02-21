@@ -10,6 +10,7 @@
 
 #include "Player/Attack.hpp"
 #include "Player/Blood.hpp"
+#include "Player/Bone.hpp"
 #include "Player/Head.hpp"
 #include "Player/Heart.hpp"
 #include "Player/PlayerResources.hpp"
@@ -40,6 +41,11 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,maxhealth(health)
 	,veloc(0, 0)
 	,onGround(false)
+	,arm(nullptr)
+	,forearm(nullptr)
+	,swingSword({
+
+	}, 6, false)
 {
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
@@ -70,6 +76,25 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	head = new Head(level, getPos().x, getPos().y, *this, scores);
 	level->addEntity(head);
 	this->setDepth(-6);
+
+	arm = new Bone(level, *this, 6, 4, "<fill this in later>");
+	level->addEntity(arm);
+
+	arm->boneTransform().setOrigin(2, 2);
+
+	forearm = new Bone(level, *this, 6, 4, "<fill this in later>");
+	level->addEntity(forearm);
+
+	arm->addChild(forearm);
+
+	forearm->boneTransform().setRotation(-30.f);
+	
+	sword = new Bone(level, *this, 16, 4, "<sword yo>");
+	level->addEntity(sword);
+
+	forearm->addChild(sword);
+
+	sword->boneTransform().setRotation(-60.f);
 
 	currentArmAnimation = "melee";
 }
@@ -294,6 +319,11 @@ void Player::onUpdate()
 			sprite.setRotation(-armAngle);
 		});
 	}
+
+	arm->boneTransform().setPosition(getPos());
+	arm->boneTransform().setRotation(-armAngle);
+	arm->boneTransform().setScale(1.f, facing);
+
 	aimer.setPosition(getPos() + 64.f * aim);
 }
 
