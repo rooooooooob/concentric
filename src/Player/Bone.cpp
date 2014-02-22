@@ -6,7 +6,7 @@
 #include "jam-engine/Utility/Trig.hpp"
 
 #include "Player/Player.hpp"
-
+#include <iostream>
 namespace con
 {
 
@@ -20,6 +20,7 @@ Bone::Bone(je::Level *level, Player& owner, int length, int thickness, const std
 	,thickness(thickness)
 {
 	//mBoneTransform.setOrigin(0.f, thickness / 2.f);
+	mBoneTransform.setScale(1.f, 1.f);
 }
 
 void Bone::addChild(Bone *child)
@@ -52,7 +53,7 @@ void Bone::onUpdate()
 	if (parent == nullptr)
 	{
 		//	no transform (at first) since no parent
-		updateBoneTransform(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f), sf::Vector2f(0.f, 0.f), 0.f);
+		this->updateBoneTransform(sf::Vector2f(0.f, 0.f), sf::Vector2f(1.f, 1.f), sf::Vector2f(0.f, 0.f), 0.f);
 	}
 }
 
@@ -71,6 +72,9 @@ void Bone::updateBoneTransform(sf::Vector2f pos, sf::Vector2f scale, sf::Vector2
 	transform().setScale(scale);
 	transform().setOrigin(origin);
 	transform().setRotation(angle);
+
+	//std::cout << "(" << ((int)pos.x / 10) * 10 << ", " << ((int)pos.y / 10) * 10 << ")"
+	//	<< " --  (" << scale.x << ", " << scale.x << ")\n";
 
 	for (Bone *child : children)
 		child->updateBoneTransform(pos, scale, origin, angle);

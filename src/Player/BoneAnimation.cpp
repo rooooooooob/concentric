@@ -3,14 +3,24 @@
 #include "jam-engine/Utility/Assert.hpp"
 
 #include "Player/Bone.hpp"
-
+#include <iostream>
 namespace con
 {
 
+BoneAnimation::BoneAnimation(TransformSet frame, unsigned int frameLength, bool repeat)
+	:bones()
+	,lengths(frame.transforms.size(), frameLength)
+	,frameProgress(0)
+	,frame(0)
+	,repeating(repeat)
+{
+	bones.push_back(frame);
+	this->transformBones();
+}
 
 BoneAnimation::BoneAnimation(std::initializer_list<TransformSet> frames, unsigned int frameLength, bool repeat)
 	:bones()
-	,lengths(frames.size(), frameLength)
+	,lengths(frames.begin()->transforms.size(), frameLength)
 	,frameProgress(0)
 	,frame(0)
 	,repeating(repeat)
@@ -48,6 +58,12 @@ BoneAnimation::BoneAnimation(std::initializer_list<TransformSet> bones, std::ini
 }
 
 
+void BoneAnimation::addTransformSet(const TransformSet& set)
+{
+	bones.push_back(set);
+	this->transformBones();
+}
+
 bool BoneAnimation::isFinished() const
 {
 	return !repeating && frame == lengths.size() - 1;
@@ -83,6 +99,7 @@ bool BoneAnimation::advanceFrame()
 void BoneAnimation::reset()
 {
 	frame = 0;
+	this->transformBones();
 }
 
 
@@ -93,12 +110,15 @@ void BoneAnimation::transformBones()
 	for (TransformSet& bone : bones)
 	{
 		const BoneTransform& source = bone.transforms[frame];
-		sf::Transformable& transform = bone.bone.boneTransform();
+		sf::Transformable& transform = bone.bone->boneTransform();
 		transform.setPosition(source.pos);
 		transform.setScale(source.scale);
 		transform.setOrigin(source.origin);
 		transform.setRotation(source.angle);
+
+		//std::cout << "Bone::updateBoneTransfomr(angle(" << (int) (source.angle / 2) * 2 << "))" << std::endl;
 	}
+	//std::cout << std::endl;
 }
 
 }

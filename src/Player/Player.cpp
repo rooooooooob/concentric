@@ -23,8 +23,30 @@ const int RUNNING_ANIM_TIME = 23;
 namespace con
 {
 
+
+std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTarm = {
+	BoneAnimation::BoneTransform(60.f),
+	BoneAnimation::BoneTransform(30.f),
+	BoneAnimation::BoneTransform(45.f),
+	BoneAnimation::BoneTransform(55.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTforearm = {
+	BoneAnimation::BoneTransform(-60.f),
+	BoneAnimation::BoneTransform(-30.f),
+	BoneAnimation::BoneTransform(-10.f),
+	BoneAnimation::BoneTransform(0.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTsword = {
+	BoneAnimation::BoneTransform(-120.f),
+	BoneAnimation::BoneTransform(-90.f),
+	BoneAnimation::BoneTransform(-60.f),
+	BoneAnimation::BoneTransform(-30.f)
+};
+
 Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Scoreboard& scores)
-	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 2))
+	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 0))
 	,currentAnimation("running")
 	,currentArmAnimation("sword")
 	,config(config)
@@ -41,12 +63,14 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,maxhealth(health)
 	,veloc(0, 0)
 	,onGround(false)
-	,arm(nullptr)
-	,forearm(nullptr)
-	,swingSword({
-
-	}, 6, false)
+	,arm(new Bone(level, *this, 6, 4, "ninja_arm_segment.png"))
+	,forearm(new Bone(level, *this, 6, 4, "ninja_arm_segment.png"))
+	,sword(new Bone(level, *this, 16, 4, "katana.png"))
+	,swingSword(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)
 {
+	swingSword.addTransformSet(BoneAnimation::TransformSet(*forearm, swordSwingBTforearm));
+	swingSword.addTransformSet(BoneAnimation::TransformSet(*sword, swordSwingBTsword));
+
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
 	{
@@ -77,24 +101,15 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	level->addEntity(head);
 	this->setDepth(-6);
 
-	arm = new Bone(level, *this, 6, 4, "<fill this in later>");
 	level->addEntity(arm);
 
-	arm->boneTransform().setOrigin(2, 2);
-
-	forearm = new Bone(level, *this, 6, 4, "<fill this in later>");
 	level->addEntity(forearm);
+
+	level->addEntity(sword);
 
 	arm->addChild(forearm);
 
-	forearm->boneTransform().setRotation(-30.f);
-	
-	sword = new Bone(level, *this, 16, 4, "<sword yo>");
-	level->addEntity(sword);
-
 	forearm->addChild(sword);
-
-	sword->boneTransform().setRotation(-60.f);
 
 	currentArmAnimation = "melee";
 }
@@ -111,9 +126,9 @@ void Player::damage(float amount, const PlayerConfig *source)
 	{
 		//die here
 		int n = 16 + je::randomf(16);
-        for (int i = 0; i < n; ++i)
-            level->addEntity(new Blood(level, getPos(), je::lengthdir(2 + je::randomf(3), je::choose({je::randomf(360), 45 + je::randomf(90)}))));
-        level->addEntity(new Heart(level, getPos(), je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
+		for (int i = 0; i < n; ++i)
+			level->addEntity(new Blood(level, getPos(), je::lengthdir(2 + je::randomf(3), je::choose({je::randomf(360), 45 + je::randomf(90)}))));
+		level->addEntity(new Heart(level, getPos(), je::lengthdir(3 + je::randomf(4), 60 + je::randomf(60))));
 
 		health = 0;
 		if (state != State::Decapitated && source)
@@ -132,9 +147,9 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 	auto it = animations.find(currentAnimation);
 	if (it != animations.end())
 		it->second->draw(target, states);
-	auto it2 = armAnimations.find(currentArmAnimation);
-	if (it2 != armAnimations.end())
-		it2->second->draw(target, states);
+	//auto it2 = armAnimations.find(currentArmAnimation);
+	//if (it2 != armAnimations.end())
+	//	it2->second->draw(target, states);
 	target.draw(aimer, states);
 }
 
@@ -203,10 +218,13 @@ void Player::onUpdate()
 		case State::SwingWeapon:
 			currentArmAnimation = "melee";
 			attemptRunning(0.5);
-			armAnimations[currentArmAnimation]->advanceFrame();
-			if (armAnimations[currentArmAnimation]->isFinished())
+			swingSword.advanceFrame();
+			if (swingSword.isFinished())
+			//armAnimations[currentArmAnimation]->advanceFrame();
+			//if (armAnimations[currentArmAnimation]->isFinished())
 			{
-				armAnimations[currentArmAnimation]->reset();
+				swingSword.reset();
+				//armAnimations[currentArmAnimation]->reset();
 				state = State::AttackCooldown;
 			}
 			break;
@@ -320,9 +338,13 @@ void Player::onUpdate()
 		});
 	}
 
-	arm->boneTransform().setPosition(getPos());
-	arm->boneTransform().setRotation(-armAngle);
-	arm->boneTransform().setScale(1.f, facing);
+	swingSword.transformBones();
+
+	sf::Transformable& transform = arm->boneTransform();
+	transform.setOrigin(2.f, 2.f);
+	transform.setPosition(getPos());
+	transform.setRotation(facing * transform.getRotation() - armAngle);
+	transform.setScale(1.f * transform.getScale().x, facing * transform.getScale().y);
 
 	aimer.setPosition(getPos() + 64.f * aim);
 }
