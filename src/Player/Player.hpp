@@ -70,7 +70,7 @@ private:
 	std::string currentAnimation;
 	std::map<std::string, std::unique_ptr<je::Animation> > animations;
 	std::string currentArmAnimation;
-	std::map<std::string, std::unique_ptr<je::Animation> > armAnimations;
+	std::map<std::string, BoneAnimation> armAnimations;
 	sf::Sprite aimer;
 	const je::Controller& input;
 	const PlayerConfig& config;
@@ -85,8 +85,7 @@ private:
 	float maxhealth;
 	sf::Vector2f veloc;
 	bool onGround;
-	Bone *arm, *forearm, *sword;
-	BoneAnimation swingSword;
+	Bone *arm, *forearm, *sword, *knife;
 };
 
 }

@@ -23,7 +23,7 @@ const int RUNNING_ANIM_TIME = 23;
 namespace con
 {
 
-
+/*			sword swing anim			*/
 std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTarm = {
 	BoneAnimation::BoneTransform(60.f),
 	BoneAnimation::BoneTransform(30.f),
@@ -43,6 +43,47 @@ std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTsword = {
 	BoneAnimation::BoneTransform(-90.f),
 	BoneAnimation::BoneTransform(-60.f),
 	BoneAnimation::BoneTransform(-30.f)
+};
+// temp hack to make invisible while in this anim
+std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTknife = {
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f))
+};
+
+/*			knife throw anim			*/
+std::initializer_list<BoneAnimation::BoneTransform> throwKnifeBTarm = {
+	BoneAnimation::BoneTransform(30.f),
+	BoneAnimation::BoneTransform(15.f),
+	BoneAnimation::BoneTransform(-15.f),
+	BoneAnimation::BoneTransform(30.f),
+	BoneAnimation::BoneTransform(40.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> throwKnifeBTforearm = {
+	BoneAnimation::BoneTransform(-45.f),
+	BoneAnimation::BoneTransform(-60.f),
+	BoneAnimation::BoneTransform(-90.f),
+	BoneAnimation::BoneTransform(-60.f),
+	BoneAnimation::BoneTransform(-40.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> throwKnifeBTknife = {
+	BoneAnimation::BoneTransform(-30.f),
+	BoneAnimation::BoneTransform(-45.f),
+	BoneAnimation::BoneTransform(-30.f),
+	BoneAnimation::BoneTransform(0.f),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f))//0 scale
+};
+// temp hack to make invisible while in this anim
+std::initializer_list<BoneAnimation::BoneTransform> throwKnifeBTsword = {
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f))
 };
 
 Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Scoreboard& scores)
@@ -65,11 +106,21 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,onGround(false)
 	,arm(new Bone(level, *this, 6, 4, "ninja_arm_segment.png"))
 	,forearm(new Bone(level, *this, 6, 4, "ninja_arm_segment.png"))
-	,sword(new Bone(level, *this, 16, 4, "katana.png"))
-	,swingSword(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)
+	,sword(new Bone(level, *this, 16, 4, getSwingingArmSprite(config.sword)))
+	,knife(new Bone(level, *this, 8, 3, getThrowingArmSprite(config.thrown)))
 {
-	swingSword.addTransformSet(BoneAnimation::TransformSet(*forearm, swordSwingBTforearm));
-	swingSword.addTransformSet(BoneAnimation::TransformSet(*sword, swordSwingBTsword));
+
+	armAnimations.insert(std::pair<std::string, BoneAnimation>("melee", BoneAnimation(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)));
+	
+	armAnimations.at("melee").addTransformSet(BoneAnimation::TransformSet(*forearm, swordSwingBTforearm));
+	armAnimations.at("melee").addTransformSet(BoneAnimation::TransformSet(*sword, swordSwingBTsword));
+	armAnimations.at("melee").addTransformSet(BoneAnimation::TransformSet(*knife, swordSwingBTknife));
+
+	armAnimations.insert(std::pair<std::string, BoneAnimation>("throw", BoneAnimation(BoneAnimation::TransformSet(*arm, throwKnifeBTarm), 4, false)));
+
+	armAnimations.at("throw").addTransformSet(BoneAnimation::TransformSet(*forearm, throwKnifeBTforearm));
+	armAnimations.at("throw").addTransformSet(BoneAnimation::TransformSet(*sword, throwKnifeBTsword));
+	armAnimations.at("throw").addTransformSet(BoneAnimation::TransformSet(*knife, throwKnifeBTknife));
 
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_running.png"), 24, 24, RUNNING_ANIM_TIME));
 	animations["running"]->apply([&](sf::Sprite& sprite)
@@ -84,18 +135,18 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 		sprite.setOrigin(12, 0);
 	});
 
-	armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getSwingingArmSprite(config.sword)), 48, 32, 6, false));
-	armAnimations["melee"]->apply([&](sf::Sprite& sprite)
-	{
-		sprite.setPosition(getPos());
-		sprite.setOrigin(24, 10);
-	});
-	armAnimations["throw"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getThrowingArmSprite(config.thrown)), 48, 32, 4, false));
-	armAnimations["throw"]->apply([&](sf::Sprite& sprite)
-	{
-		sprite.setPosition(getPos());
-		sprite.setOrigin(24, 10);
-	});
+	//armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getSwingingArmSprite(config.sword)), 48, 32, 6, false));
+	//armAnimations["melee"]->apply([&](sf::Sprite& sprite)
+	//{
+	//	sprite.setPosition(getPos());
+	//	sprite.setOrigin(24, 10);
+	//});
+	//armAnimations["throw"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getThrowingArmSprite(config.thrown)), 48, 32, 4, false));
+	//armAnimations["throw"]->apply([&](sf::Sprite& sprite)
+	//{
+	//	sprite.setPosition(getPos());
+	//	sprite.setOrigin(24, 10);
+	//});
 
 	head = new Head(level, getPos().x, getPos().y, *this, scores);
 	level->addEntity(head);
@@ -107,9 +158,18 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 
 	level->addEntity(sword);
 
+	level->addEntity(knife);
+
 	arm->addChild(forearm);
 
 	forearm->addChild(sword);
+
+	forearm->addChild(knife);
+
+	arm->setDepth(-7);
+	forearm->setDepth(-7);
+	sword->setDepth(-7);
+	knife->setDepth(-7);
 
 	currentArmAnimation = "melee";
 }
@@ -144,9 +204,9 @@ const PlayerConfig& Player::getConfig() const
 
 void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 {
-	//auto it = animations.find(currentAnimation);
-	//if (it != animations.end())
-	//	it->second->draw(target, states);
+	auto it = animations.find(currentAnimation);
+	if (it != animations.end())
+		it->second->draw(target, states);
 	//auto it2 = armAnimations.find(currentArmAnimation);
 	//if (it2 != armAnimations.end())
 	//	it2->second->draw(target, states);
@@ -218,13 +278,10 @@ void Player::onUpdate()
 		case State::SwingWeapon:
 			currentArmAnimation = "melee";
 			attemptRunning(0.5);
-			swingSword.advanceFrame();
-			if (swingSword.isFinished())
-			//armAnimations[currentArmAnimation]->advanceFrame();
-			//if (armAnimations[currentArmAnimation]->isFinished())
+			armAnimations.at(currentArmAnimation).advanceFrame();
+			if (armAnimations.at(currentArmAnimation).isFinished())
 			{
-				swingSword.reset();
-				//armAnimations[currentArmAnimation]->reset();
+				armAnimations.at(currentArmAnimation).reset();
 				state = State::AttackCooldown;
 			}
 			break;
@@ -233,10 +290,10 @@ void Player::onUpdate()
 			attemptRunning();
 			if (attemptJumping())
 			{
-				armAnimations[currentArmAnimation]->reset();
+				armAnimations.at(currentArmAnimation).reset();
 				state = State::Jumping;
 			}
-			armAnimations[currentArmAnimation]->advanceFrame();
+			armAnimations.at(currentArmAnimation).advanceFrame();
 			if (cooldown == 32)
 			{
 				level->addEntity(new ThrownWeapon(level, getPos() + je::lengthdir(12, armAngle), config, aim * 12.f));
@@ -257,7 +314,7 @@ void Player::onUpdate()
 			attemptJumping();
 			if (cooldown == 1)
 			{
-				armAnimations[currentArmAnimation]->reset();
+				armAnimations.at(currentArmAnimation).reset();
 				state = State::Idle;
 			}
 			break;
@@ -327,20 +384,20 @@ void Player::onUpdate()
 	}
 	armAngle = je::direction(aim);
 
-	auto armAnim = armAnimations.find(currentArmAnimation);
-	if (armAnim != armAnimations.end())
-	{
-		armAnim->second->apply([&](sf::Sprite& sprite)
-		{
-			sprite.setPosition(getPos());
-			sprite.setScale(1, facing);
-			sprite.setRotation(-armAngle);
-		});
-	}
+	//auto armAnim = armAnimations.find(currentArmAnimation);
+	//if (armAnim != armAnimations.end())
+	//{
+	//	armAnim->second->apply([&](sf::Sprite& sprite)
+	//	{
+	//		sprite.setPosition(getPos());
+	//		sprite.setScale(1, facing);
+	//		sprite.setRotation(-armAngle);
+	//	});
+	//}
 
-	swingSword.transformBones();//-armAngle, sf::Vector2f(1.f, facing));
+	armAnimations.at(currentArmAnimation).transformBones();//-armAngle, sf::Vector2f(1.f, facing));
 
-	swingSword.scaleRotations(facing);
+	armAnimations.at(currentArmAnimation).scaleRotations(facing);
 
 	sf::Transformable& transform = arm->boneTransform();
 
