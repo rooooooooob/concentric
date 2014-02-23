@@ -110,8 +110,8 @@ Arena::Arena(je::Game *game, const Settings& settings)
 		scoreText.setColor(sf::Color::White);
 	}
 
-	//	make sure heads are updated after players! (or else the heads lag behind)
-	this->setSpecificOrderEntitiesPost({"Head"});
+	//	make sure players are updated before heads and bones (or else the heads lag behind)
+	this->setSpecificOrderEntitiesPre({"Player"});
 
 
 

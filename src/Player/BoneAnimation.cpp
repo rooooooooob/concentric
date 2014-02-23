@@ -102,6 +102,15 @@ void BoneAnimation::reset()
 	this->transformBones();
 }
 
+void BoneAnimation::scaleRotations(float scalar)
+{
+	for (TransformSet& bone : bones)
+	{
+		sf::Transformable& transform = bone.bone->boneTransform();
+		transform.setRotation(transform.getRotation() * scalar);
+	}
+}
+
 
 
 /*			private			*/
@@ -116,9 +125,9 @@ void BoneAnimation::transformBones()
 		transform.setOrigin(source.origin);
 		transform.setRotation(source.angle);
 
-		//std::cout << "Bone::updateBoneTransfomr(angle(" << (int) (source.angle / 2) * 2 << "))" << std::endl;
+		std::cout << "Bone::updateBoneTransfomr(angle(" << (int) (source.angle / 2) * 2 << "))" << std::endl;
 	}
-	//std::cout << std::endl;
+	std::cout << std::endl;
 }
 
 }

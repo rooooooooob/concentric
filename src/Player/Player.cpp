@@ -144,9 +144,9 @@ const PlayerConfig& Player::getConfig() const
 
 void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 {
-	auto it = animations.find(currentAnimation);
-	if (it != animations.end())
-		it->second->draw(target, states);
+	//auto it = animations.find(currentAnimation);
+	//if (it != animations.end())
+	//	it->second->draw(target, states);
 	//auto it2 = armAnimations.find(currentArmAnimation);
 	//if (it2 != armAnimations.end())
 	//	it2->second->draw(target, states);
@@ -338,13 +338,15 @@ void Player::onUpdate()
 		});
 	}
 
-	swingSword.transformBones();
+	swingSword.transformBones();//-armAngle, sf::Vector2f(1.f, facing));
+
+	swingSword.scaleRotations(facing);
 
 	sf::Transformable& transform = arm->boneTransform();
-	transform.setOrigin(2.f, 2.f);
+
 	transform.setPosition(getPos());
-	transform.setRotation(facing * transform.getRotation() - armAngle);
-	transform.setScale(1.f * transform.getScale().x, facing * transform.getScale().y);
+	transform.scale(1.f, facing);
+	transform.rotate(-armAngle);
 
 	aimer.setPosition(getPos() + 64.f * aim);
 }

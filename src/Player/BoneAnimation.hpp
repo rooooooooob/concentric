@@ -18,7 +18,7 @@ public:
 	class BoneTransform
 	{
 	public:
-		BoneTransform(float angle = 0.f, sf::Vector2f& scale = sf::Vector2f(1.f, 1.f), const sf::Vector2f& pos = sf::Vector2f(0.f, 0.f), const sf::Vector2f& origin = sf::Vector2f(0.f, 0.f))
+		BoneTransform(float angle = 0.f, const sf::Vector2f& scale = sf::Vector2f(1.f, 1.f), const sf::Vector2f& pos = sf::Vector2f(0.f, 0.f), const sf::Vector2f& origin = sf::Vector2f(0.f, 0.f))
 			:angle(angle)
 			,scale(scale)
 			,pos(pos)
@@ -66,6 +66,7 @@ public:
 
 	void reset();
 
+	void scaleRotations(float scalar);
 
 	void transformBones();
 

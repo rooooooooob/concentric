@@ -43,7 +43,7 @@ void Head::damage(float amount, const PlayerConfig *source)
 
 void Head::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 {
-	target.draw(sprite, states);
+	//target.draw(sprite, states);
 }
 
 void Head::onUpdate()

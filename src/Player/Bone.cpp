@@ -73,8 +73,8 @@ void Bone::updateBoneTransform(sf::Vector2f pos, sf::Vector2f scale, sf::Vector2
 	transform().setOrigin(origin);
 	transform().setRotation(angle);
 
-	//std::cout << "(" << ((int)pos.x / 10) * 10 << ", " << ((int)pos.y / 10) * 10 << ")"
-	//	<< " --  (" << scale.x << ", " << scale.x << ")\n";
+	std::cout << "(" << ((int)pos.x / 10) * 10 << ", " << ((int)pos.y / 10) * 10 << ")"
+		<< " --  (" << scale.x << ", " << scale.x << ") -- asngle: " << angle << "\n";
 
 	for (Bone *child : children)
 		child->updateBoneTransform(pos, scale, origin, angle);
