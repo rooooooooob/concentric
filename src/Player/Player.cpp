@@ -359,10 +359,10 @@ void Player::onUpdate()
 		}
 	}
 	//	to stop walking off map
-	if (getPos().x < 32)
-		transform().setPosition(32, getPos().y);
-	if (getPos().x > level->getWidth() - 32)
-		transform().setPosition(level->getWidth() - 32, getPos().y);
+	if (getPos().x < 8.f)
+		transform().setPosition(8.f, getPos().y);
+	if (getPos().x > level->getWidth() - 8.f)
+		transform().setPosition(level->getWidth() - 8.f, getPos().y);
 	//	and then fix up the sprites
 	auto bodyAnim = animations.find(currentAnimation);
 	if (bodyAnim != animations.end())
@@ -404,7 +404,7 @@ void Player::onUpdate()
 		// are equal to the maxium variance of a shot, so the shot should always pass through the two crosshairs
 		// (if they were perpendicular to the aiming direction, that is)
 		aimer.setOrigin(sinf(rangedInaccuracy * je::pi / 180.f) * 96.f / sinf((90.f - rangedInaccuracy) * je::pi / 180.f), 5.f);
-		aimer.rotate(0.2f);
+		aimer.rotate(0.3f);
 	}
 }
 

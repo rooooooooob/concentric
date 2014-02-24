@@ -103,6 +103,8 @@ void Head::onUpdate()
 				}
 			}
 			transform().setPosition(owner.getPos());
+
+			sprite.setScale(owner.getFacing(), 1);
 		}
 			break;
 		case State::Decapitated:
@@ -125,7 +127,6 @@ void Head::onUpdate()
 	}
 
 	sprite.setPosition(getPos().x, getPos().y - 4);
-	sprite.setScale(owner.getFacing(), 1);
 }
 
 }
