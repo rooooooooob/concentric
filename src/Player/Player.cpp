@@ -89,11 +89,11 @@ std::initializer_list<BoneAnimation::BoneTransform> throwKnifeBTsword = {
 Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Scoreboard& scores)
 	:je::Entity(level, "Player", sf::Vector2f(x, y), sf::Vector2i(16, 24), sf::Vector2i(-8, 0))
 	,currentAnimation("running")
-	,currentArmAnimation("sword")
-	,config(config)
+	,currentArmAnimation("melee")
+	,crosshair(4, sf::Sprite(level->getGame().getTexManager().get("aimer.png")))
 	,input(config.controller)
+	,config(config)
 	,armAngle(0)
-	,aimer(level->getGame().getTexManager().get("aimer.png"))
 	,aim(0, 0)
 	,facing(Right)
 	,state(State::Idle)
@@ -108,6 +108,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,forearm(new Bone(level, *this, 6, 4, "ninja_arm_segment.png"))
 	,sword(new Bone(level, *this, 16, 4, getSwingingArmSprite(config.sword)))
 	,knife(new Bone(level, *this, 8, 3, getThrowingArmSprite(config.thrown)))
+	,rangedInaccuracy(0.f)
 {
 
 	armAnimations.insert(std::pair<std::string, BoneAnimation>("melee", BoneAnimation(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)));
@@ -135,19 +136,6 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 		sprite.setOrigin(12, 0);
 	});
 
-	//armAnimations["melee"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getSwingingArmSprite(config.sword)), 48, 32, 6, false));
-	//armAnimations["melee"]->apply([&](sf::Sprite& sprite)
-	//{
-	//	sprite.setPosition(getPos());
-	//	sprite.setOrigin(24, 10);
-	//});
-	//armAnimations["throw"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_" + getThrowingArmSprite(config.thrown)), 48, 32, 4, false));
-	//armAnimations["throw"]->apply([&](sf::Sprite& sprite)
-	//{
-	//	sprite.setPosition(getPos());
-	//	sprite.setOrigin(24, 10);
-	//});
-
 	head = new Head(level, getPos().x, getPos().y, *this, scores);
 	level->addEntity(head);
 	this->setDepth(-6);
@@ -171,7 +159,10 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	sword->setDepth(-7);
 	knife->setDepth(-7);
 
-	currentArmAnimation = "melee";
+	for (int i = 0, size = crosshair.size(); i < size; ++i)
+	{
+		crosshair[i].setRotation(360.f * i / size);
+	}
 }
 
 Player::Facing Player::getFacing() const
@@ -210,7 +201,8 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 	//auto it2 = armAnimations.find(currentArmAnimation);
 	//if (it2 != armAnimations.end())
 	//	it2->second->draw(target, states);
-	target.draw(aimer, states);
+	for (const sf::Sprite& aimer : crosshair)
+		target.draw(aimer, states);
 }
 
 void Player::onUpdate()
@@ -296,7 +288,9 @@ void Player::onUpdate()
 			armAnimations.at(currentArmAnimation).advanceFrame();
 			if (cooldown == 32)
 			{
-				level->addEntity(new ThrownWeapon(level, getPos() + je::lengthdir(12, armAngle), config, aim * 12.f));
+				float variance = 2.f * je::randomf(rangedInaccuracy) - rangedInaccuracy;
+				sf::Vector2f projectileVelocity(je::lengthdir(je::length(aim) * 12.f, je::direction(aim) + variance));
+				level->addEntity(new ThrownWeapon(level, getPos() + je::lengthdir(12, armAngle + variance), config, projectileVelocity));
 				state = State::AttackCooldown;
 			}
 			break;
@@ -405,7 +399,19 @@ void Player::onUpdate()
 	transform.scale(1.f, facing);
 	transform.rotate(-armAngle);
 
-	aimer.setPosition(getPos() + 64.f * aim);
+	rangedInaccuracy = -abs(veloc.x) * 12.f;
+
+
+	for (sf::Sprite& aimer : crosshair)
+	{
+		aimer.setPosition(getPos() + 64.f * aim);
+		// calculates the opposite side of a right-angle triangle given the adjacent and the angle between adjacent/hypotenuse
+		// this is so given the angle variance of a shot, we can make the distance between crosshairs be far enough that they
+		// are equal to the maxium variance of a shot, so the shot should always pass through the two crosshairs
+		// (if they were perpendicular to the aiming direction, that is)
+		aimer.setOrigin(sinf(rangedInaccuracy * je::pi / 180.f) * 64.f / sinf((90.f - rangedInaccuracy) * je::pi / 180.f), 5.f);
+		aimer.rotate(0.2f);
+	}
 }
 
 void Player::reset()

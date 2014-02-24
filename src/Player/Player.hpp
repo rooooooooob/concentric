@@ -71,7 +71,7 @@ private:
 	std::map<std::string, std::unique_ptr<je::Animation> > animations;
 	std::string currentArmAnimation;
 	std::map<std::string, BoneAnimation> armAnimations;
-	sf::Sprite aimer;
+	std::vector<sf::Sprite> crosshair;
 	const je::Controller& input;
 	const PlayerConfig& config;
 	float armAngle;
@@ -86,6 +86,7 @@ private:
 	sf::Vector2f veloc;
 	bool onGround;
 	Bone *arm, *forearm, *sword, *knife;
+	float rangedInaccuracy;
 };
 
 }
