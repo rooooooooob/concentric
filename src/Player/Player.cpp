@@ -198,9 +198,6 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 	auto it = animations.find(currentAnimation);
 	if (it != animations.end())
 		it->second->draw(target, states);
-	//auto it2 = armAnimations.find(currentArmAnimation);
-	//if (it2 != armAnimations.end())
-	//	it2->second->draw(target, states);
 	for (const sf::Sprite& aimer : crosshair)
 		target.draw(aimer, states);
 }
@@ -378,18 +375,7 @@ void Player::onUpdate()
 	}
 	armAngle = je::direction(aim);
 
-	//auto armAnim = armAnimations.find(currentArmAnimation);
-	//if (armAnim != armAnimations.end())
-	//{
-	//	armAnim->second->apply([&](sf::Sprite& sprite)
-	//	{
-	//		sprite.setPosition(getPos());
-	//		sprite.setScale(1, facing);
-	//		sprite.setRotation(-armAngle);
-	//	});
-	//}
-
-	armAnimations.at(currentArmAnimation).transformBones();//-armAngle, sf::Vector2f(1.f, facing));
+	armAnimations.at(currentArmAnimation).transformBones();
 
 	armAnimations.at(currentArmAnimation).scaleRotations(facing);
 
@@ -399,17 +385,25 @@ void Player::onUpdate()
 	transform.scale(1.f, facing);
 	transform.rotate(-armAngle);
 
-	rangedInaccuracy = -abs(veloc.x) * 12.f;
+	const float rangedVarianceMin = abs(veloc.x) * 8.f;
+	if (rangedVarianceMin < rangedInaccuracy)
+	{
+		rangedInaccuracy -= 0.75f;
+		if (rangedInaccuracy < rangedVarianceMin)
+			rangedInaccuracy = rangedVarianceMin;
+	}
+	else
+		rangedInaccuracy = rangedVarianceMin;
 
 
 	for (sf::Sprite& aimer : crosshair)
 	{
-		aimer.setPosition(getPos() + 64.f * aim);
+		aimer.setPosition(getPos() + 96.f * aim);
 		// calculates the opposite side of a right-angle triangle given the adjacent and the angle between adjacent/hypotenuse
 		// this is so given the angle variance of a shot, we can make the distance between crosshairs be far enough that they
 		// are equal to the maxium variance of a shot, so the shot should always pass through the two crosshairs
 		// (if they were perpendicular to the aiming direction, that is)
-		aimer.setOrigin(sinf(rangedInaccuracy * je::pi / 180.f) * 64.f / sinf((90.f - rangedInaccuracy) * je::pi / 180.f), 5.f);
+		aimer.setOrigin(sinf(rangedInaccuracy * je::pi / 180.f) * 96.f / sinf((90.f - rangedInaccuracy) * je::pi / 180.f), 5.f);
 		aimer.rotate(0.2f);
 	}
 }
@@ -489,7 +483,7 @@ bool Player::attemptJumping()
 		if (input.isActionPressed("jump"))
 		{
 			transform().move(0, -5);
-			veloc.y = -5;
+			veloc.y = -5.f - abs(veloc.x) / 2.f;
 			return true;
 		}
 	}
@@ -500,7 +494,7 @@ bool Player::attemptSwingWeapon()
 {
 	if (input.isActionPressed("swing"))
 	{
-		level->addEntity(new Attack(level, &getPos(), sf::Vector2f(-6, -16) + je::lengthdir(4, armAngle), sf::Vector2i(12, 12), config, 32, 35, sf::Vector2f(facing * 0.4, 0.25)));
+		level->addEntity(new Attack(level, *sword, config, 32, 35));
 		cooldown = 64;
 		return true;
 	}

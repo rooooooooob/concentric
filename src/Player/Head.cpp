@@ -4,10 +4,14 @@
 #include "jam-engine/Core/Level.hpp"
 #include "jam-engine/Utility/Random.hpp"
 #include "jam-engine/Utility/Trig.hpp"
-#include "Player/ThrownWeapon.hpp"
+
+#include "Player/Attack.hpp"
 #include "Player/Blood.hpp"
-#include "Scoreboard.hpp"
 #include "Player/PlayerResources.hpp"
+#include "Player/ThrownWeapon.hpp"
+
+#include "Scoreboard.hpp"
+
 
 namespace con
 {
@@ -52,9 +56,9 @@ void Head::onUpdate()
 	{
 		case State::Capitated:
 		{
-			std::vector<Entity*> thrownWeapons;
-			level->findCollisions(thrownWeapons, this, "ThrownWeapon");
-			for (je::Entity *entity : thrownWeapons)
+			std::vector<Entity*> collisionResults;
+			level->findCollisions(collisionResults, this, "ThrownWeapon");
+			for (je::Entity *entity : collisionResults)
 			{
 				ThrownWeapon& twep = *((ThrownWeapon*) entity);
 				if (twep.getTeamID() != owner.getConfig().team)
@@ -75,6 +79,27 @@ void Head::onUpdate()
 						);
 					}
 					twep.destroy();
+				}
+			}
+			collisionResults.clear();
+			level->findCollisions(collisionResults, this, "Attack");
+			for (je::Entity *entity : collisionResults)
+			{
+				Attack& atk = *((Attack*) entity);
+				if (atk.getPlayerConfig().team != owner.getConfig().team)
+				{
+					this->damage(atk.getDamage() * 2.f, &atk.getPlayerConfig());
+					owner.damage(atk.getDamage() / 2.f);
+					if (health <= 0)
+					{
+						//velocity = atk.getVelocity() / 2.f;
+					}
+					const int n = je::randomf(6) + 1;
+					for (int i = 0; i < n; ++i)
+					{
+						level->addEntity(new Blood(level, atk.getPos(), je::lengthdir(je::randomf(360.f), 9 - je::randomf(18))));
+					}
+					atk.destroy();
 				}
 			}
 			transform().setPosition(owner.getPos());

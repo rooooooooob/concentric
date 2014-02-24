@@ -60,6 +60,11 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	{
 		addEntity(new SolidGround(this, i, groundHeight - 32, sf::Rect<int>(i, groundHeight - 32, 32, 6), "platform.png"));
 	}
+	addEntity(new SolidGround(this, 32, groundHeight - 80, sf::Rect<int>(32, groundHeight - 80, 32, 6), "platform.png"));
+	for (int i = 96; i < 256; i += 32)
+	{
+		addEntity(new SolidGround(this, i, groundHeight - 128, sf::Rect<int>(i, groundHeight - 128, 32, 6), "platform.png"));
+	}
 
 	int gapSize = getWidth() / (settings.getNumberOfPlayers() + 1);
 	for (int i = 0; i < settings.getNumberOfPlayers(); ++i)

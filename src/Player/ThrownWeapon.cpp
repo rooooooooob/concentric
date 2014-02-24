@@ -10,7 +10,7 @@
 namespace con
 {
 
-static je::DetailedMask::MaskRef getMask(PlayerConfig::Thrown type, je::Level *level)
+static je::DetailedMask::MaskRef getThrownMask(PlayerConfig::Thrown type, je::Level *level)
 {
 	static bool loaded = false;
 	if (!loaded)
@@ -33,7 +33,7 @@ static je::DetailedMask::MaskRef getMask(PlayerConfig::Thrown type, je::Level *l
 
 
 ThrownWeapon::ThrownWeapon(je::Level *level, const sf::Vector2f& pos, const PlayerConfig& config, const sf::Vector2f& velocity)
-	:je::Entity(level, "ThrownWeapon", pos, getMask(config.thrown, level))
+	:je::Entity(level, "ThrownWeapon", pos, getThrownMask(config.thrown, level))
 	,sprite()
 	,config(config)
 	,velocity(velocity)
