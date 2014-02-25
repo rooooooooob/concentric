@@ -84,6 +84,35 @@ std::initializer_list<BoneAnimation::BoneTransform> sprintSlashBTknife = {
 	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f))
 };
 
+/*			sword thrust anim			*/
+std::initializer_list<BoneAnimation::BoneTransform> thrustBTarm = {
+	BoneAnimation::BoneTransform(-200.f),
+	BoneAnimation::BoneTransform(-225.f),
+	BoneAnimation::BoneTransform(-290.f),
+	BoneAnimation::BoneTransform(-320.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> thrustBTforearm = {
+	BoneAnimation::BoneTransform(-80.f),
+	BoneAnimation::BoneTransform(-100.f),
+	BoneAnimation::BoneTransform(-45.f),
+	BoneAnimation::BoneTransform(-20.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> thrustBTsword = {
+	BoneAnimation::BoneTransform(-75.f),
+	BoneAnimation::BoneTransform(-35.f),
+	BoneAnimation::BoneTransform(-25.f),
+	BoneAnimation::BoneTransform(-10.f)
+};
+// temp hack to make invisible while in this anim
+std::initializer_list<BoneAnimation::BoneTransform> thrustBTknife = {
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f))
+};
+
 /*			knife throw anim			*/
 std::initializer_list<BoneAnimation::BoneTransform> throwKnifeBTarm = {
 	BoneAnimation::BoneTransform(30.f),
@@ -156,6 +185,12 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*forearm, sprintSlashBTforearm));
 	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*sword, sprintSlashBTsword));
 	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*knife, sprintSlashBTknife));
+
+	armAnimations.insert(std::pair<std::string, BoneAnimation>("thrust", BoneAnimation(BoneAnimation::TransformSet(*arm, thrustBTarm), 7, false)));
+	
+	armAnimations.at("thrust").addTransformSet(BoneAnimation::TransformSet(*forearm, thrustBTforearm));
+	armAnimations.at("thrust").addTransformSet(BoneAnimation::TransformSet(*sword, thrustBTsword));
+	armAnimations.at("thrust").addTransformSet(BoneAnimation::TransformSet(*knife, thrustBTknife));
 
 
 	armAnimations.insert(std::pair<std::string, BoneAnimation>("throw", BoneAnimation(BoneAnimation::TransformSet(*arm, throwKnifeBTarm), 4, false)));
@@ -291,6 +326,8 @@ void Player::onUpdate()
 				state = State::Jumping;
 			if (attemptSwingWeapon())
 				state = State::SwingWeapon;
+			if (attemptThrustWeapon())
+				state = State::ThrustWeapon;
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
 			break;
@@ -304,6 +341,8 @@ void Player::onUpdate()
 				state = State::Jumping;
 			if (attemptSwingWeapon())
 				state = State::SwingWeapon;
+			if (attemptThrustWeapon())
+				state = State::ThrustWeapon;
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
 			break;
@@ -318,12 +357,16 @@ void Player::onUpdate()
 				state = State::Walking;
 			if (attemptJumping())
 				state = State::Leaping;
-			if (attemptSwingWeapon(2.f))
+			if (attemptSwingWeapon(1.5f))
 				state = State::SprintSwingWeapon;
+			if (attemptThrustWeapon(1.5f))
+				state = State::SprintThrustWeapon;
 			break;
 		case State::Jumping:
 			currentAnimation = "jumping";
 			attemptRunning(0.75);
+			if (attemptThrustWeapon())
+				state = State::ThrustWeapon;
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
 			if (onGround)
@@ -359,6 +402,28 @@ void Player::onUpdate()
 				state = State::AttackCooldown;
 			}
 			break;
+		case State::SprintThrustWeapon:
+			involuntaryRunning(2.f);
+			currentArmAnimation = "thrust";
+			aim.x = facing;
+			aim.y = 0.f;
+			armAnimations.at(currentArmAnimation).advanceFrame();
+			if (armAnimations.at(currentArmAnimation).isFinished())
+			{
+				armAnimations.at(currentArmAnimation).reset();
+				state = State::AttackCooldown;
+			}
+			break;
+		case State::ThrustWeapon:
+			currentArmAnimation = "thrust";
+			attemptRunning(0.5);
+			armAnimations.at(currentArmAnimation).advanceFrame();
+			if (armAnimations.at(currentArmAnimation).isFinished())
+			{
+				armAnimations.at(currentArmAnimation).reset();
+				state = State::AttackCooldown;
+			}
+			break;
 		case State::ThrownWeapon:
 			currentArmAnimation = "throw";
 			attemptRunning();
@@ -381,10 +446,16 @@ void Player::onUpdate()
 				state = State::Idle;
 			break;
 		case State::Decapitated:
-			veloc.x = 4.f * facing;
+			veloc.x = 3.f * facing;
 			involuntaryRunning(1.5f);
+			if (cooldown <= 1)
+				attemptThrowWeapon();
+			if (cooldown <= 1)
+				attemptSwingWeapon();
+			if (cooldown <= 1)
+				attemptThrustWeapon();
 			level->addEntity(new Blood(level, getPos() + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
-			this->damage(3);//bleedout
+			this->damage(2);//bleedout
 			break;
 		case State::AttackCooldown:
 			attemptRunning(0.9f);
@@ -520,7 +591,7 @@ void Player::reset()
 bool Player::attemptRunning(float rate)
 {
 	const float horizontalAcceleration = 0.2;
-	const float maxHorizontalSpeed = 2.5 * rate;
+	const float maxHorizontalSpeed = 2 * rate;
 
 	
 
@@ -579,6 +650,17 @@ bool Player::attemptSwingWeapon(float amplifier)
 	{
 		level->addEntity(new Attack(level, *sword, config, 6 * 4, amplifier * 35));
 		cooldown = 64;
+		return true;
+	}
+	return false;
+}
+
+bool Player::attemptThrustWeapon(float amplifier)	
+{
+	if (input.isActionPressed("thrust"))
+	{
+		level->addEntity(new Attack(level, *sword, config, 5 * 4, amplifier * 25));
+		cooldown = 48;
 		return true;
 	}
 	return false;

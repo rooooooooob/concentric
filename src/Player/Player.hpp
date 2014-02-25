@@ -51,6 +51,8 @@ private:
 
 	bool attemptSwingWeapon(float amplifier = 1.f);
 
+	bool attemptThrustWeapon(float amplifier = 1.f);
+
 	bool attemptThrowWeapon();
 
 	bool involuntaryRunning(float rate = 1.f);
@@ -64,6 +66,8 @@ private:
 		Leaping,
 		SwingWeapon,
 		SprintSwingWeapon,
+		ThrustWeapon,
+		SprintThrustWeapon,
 		ThrownWeapon,
 		Stunned,
 		Decapitated,
