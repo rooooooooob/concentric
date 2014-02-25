@@ -214,13 +214,21 @@ void Player::onUpdate()
 
 	//float newY = level->rayCastManually(this, "SolidGround", [](Entity*e)->bool{return true;}, sf::Vector2f(0, veloc.y)).y;
 
-	onGround = level->testCollision(this, "SolidGround", 0, veloc.y + 1) ||
-	           level->testCollision(this, "JumpThroughPlatform", jumpThroughFilter, 0, veloc.y + 1);
+	const bool jumpThroughBelow = level->testCollision(this, "JumpThroughPlatform", jumpThroughFilter, 0, veloc.y + 1);
+
+	onGround = jumpThroughBelow || level->testCollision(this, "SolidGround", 0, veloc.y + 1);
+	
+	if (jumpThroughBelow && input.isActionHeld("crouch"))
+	{
+		transform().move(0.f, 2.f);
+		onGround = false;
+	}
+	
 	if (onGround)
 	{
 		if (veloc.y > 0.f)
 		{
-			transform().setPosition(prevPos);
+			//transform().setPosition(prevPos);
 			veloc.y = 0.f;
 		}
 	}
@@ -365,9 +373,17 @@ void Player::onUpdate()
 	}
 	//	to stop walking off map
 	if (getPos().x < 8.f)
+	{
 		transform().setPosition(8.f, getPos().y);
-	if (getPos().x > level->getWidth() - 8.f)
+		if (veloc.x < 0.f)
+			veloc.x = 0.f;
+	}
+	else if (getPos().x > level->getWidth() - 8.f)
+	{
 		transform().setPosition(level->getWidth() - 8.f, getPos().y);
+		if (veloc.x > 0.f)
+			veloc.x = 0.f;
+	}
 	//	and then fix up the sprites
 	auto bodyAnim = animations.find(currentAnimation);
 	if (bodyAnim != animations.end())
