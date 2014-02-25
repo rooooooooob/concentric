@@ -21,6 +21,8 @@
 
 const int RUNNING_ANIM_TIME = 23;
 
+const float AIMER_MAX_DISTANCE = 96.f;
+
 namespace con
 {
 
@@ -48,6 +50,34 @@ std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTsword = {
 // temp hack to make invisible while in this anim
 std::initializer_list<BoneAnimation::BoneTransform> swordSwingBTknife = {
 	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
+	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f))
+};
+
+/*			running slash anim			*/
+std::initializer_list<BoneAnimation::BoneTransform> sprintSlashBTarm = {
+	BoneAnimation::BoneTransform(45.f),
+	BoneAnimation::BoneTransform(15.f),
+	BoneAnimation::BoneTransform(-15.f),
+	BoneAnimation::BoneTransform(-45.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> sprintSlashBTforearm = {
+	BoneAnimation::BoneTransform(60.f),
+	BoneAnimation::BoneTransform(45.f),
+	BoneAnimation::BoneTransform(30.f),
+	BoneAnimation::BoneTransform(15.f)
+};
+
+std::initializer_list<BoneAnimation::BoneTransform> sprintSlashBTsword = {
+	BoneAnimation::BoneTransform(35.f, sf::Vector2f(1.f, -1.f)),
+	BoneAnimation::BoneTransform(25.f, sf::Vector2f(1.f, -1.f)),
+	BoneAnimation::BoneTransform(15.f, sf::Vector2f(1.f, -1.f)),
+	BoneAnimation::BoneTransform(5.f, sf::Vector2f(1.f, -1.f))
+};
+// temp hack to make invisible while in this anim
+std::initializer_list<BoneAnimation::BoneTransform> sprintSlashBTknife = {
 	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
 	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
 	BoneAnimation::BoneTransform(0.f, sf::Vector2f(0.f, 0.f)),
@@ -121,11 +151,11 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	armAnimations.at("melee").addTransformSet(BoneAnimation::TransformSet(*sword, swordSwingBTsword));
 	armAnimations.at("melee").addTransformSet(BoneAnimation::TransformSet(*knife, swordSwingBTknife));
 
-	armAnimations.insert(std::pair<std::string, BoneAnimation>("sprint_melee", BoneAnimation(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)));
+	armAnimations.insert(std::pair<std::string, BoneAnimation>("sprint_melee", BoneAnimation(BoneAnimation::TransformSet(*arm, sprintSlashBTarm), 7, false)));
 	
-	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*forearm, swordSwingBTforearm));
-	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*sword, swordSwingBTsword));
-	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*knife, swordSwingBTknife));
+	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*forearm, sprintSlashBTforearm));
+	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*sword, sprintSlashBTsword));
+	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*knife, sprintSlashBTknife));
 
 
 	armAnimations.insert(std::pair<std::string, BoneAnimation>("throw", BoneAnimation(BoneAnimation::TransformSet(*arm, throwKnifeBTarm), 4, false)));
@@ -216,8 +246,9 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 void Player::onUpdate()
 {
 	//std::cout << "hp: " << health << " / " << maxhealth << std::endl;
-	aim.x = input.axisPos("aim_x", getPos().x, level);
-	aim.y = input.axisPos("aim_y", getPos().y, level);
+	const sf::Vector2f newAim(input.axisPos("aim_x", getPos().x, level), input.axisPos("aim_y", getPos().y, level));
+	if (je::length(newAim) > 0.1f)
+		aim = newAim;
 
 	//float newY = level->rayCastManually(this, "SolidGround", [](Entity*e)->bool{return true;}, sf::Vector2f(0, veloc.y)).y;
 
@@ -263,7 +294,7 @@ void Player::onUpdate()
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
 			break;
-		case State::Walking://????
+		case State::Walking:
 			currentAnimation = "running";
 			if (!attemptRunning())
 				state = State::Idle;
@@ -271,20 +302,23 @@ void Player::onUpdate()
 				state = State::Sprinting;
 			if (attemptJumping())
 				state = State::Jumping;
-			if (attemptSwingWeapon(2.f))
+			if (attemptSwingWeapon())
 				state = State::SwingWeapon;
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
 			break;
-		case State::Sprinting://maybe make sprinting later
+		case State::Sprinting:
 			currentAnimation = "running";
+			currentArmAnimation = "sprint_melee";
+			aim.x = facing / 2.f;
+			aim.y = 0.f;
 			if (!attemptRunning(2.f))
 				state = State::Idle;
 			if (!input.isActionHeld("sprint"))
 				state = State::Walking;
 			if (attemptJumping())
 				state = State::Leaping;
-			if (attemptSwingWeapon())
+			if (attemptSwingWeapon(2.f))
 				state = State::SprintSwingWeapon;
 			break;
 		case State::Jumping:
@@ -458,12 +492,12 @@ void Player::onUpdate()
 
 	for (sf::Sprite& aimer : crosshair)
 	{
-		aimer.setPosition(getPos() + 96.f * aim);
+		aimer.setPosition(getPos() + AIMER_MAX_DISTANCE * aim);
 		// calculates the opposite side of a right-angle triangle given the adjacent and the angle between adjacent/hypotenuse
 		// this is so given the angle variance of a shot, we can make the distance between crosshairs be far enough that they
 		// are equal to the maxium variance of a shot, so the shot should always pass through the two crosshairs
 		// (if they were perpendicular to the aiming direction, that is)
-		aimer.setOrigin(sinf(rangedInaccuracy * je::pi / 180.f) * 96.f / sinf((90.f - rangedInaccuracy) * je::pi / 180.f), 5.f);
+		aimer.setOrigin(sinf(rangedInaccuracy * je::pi / 180.f) * AIMER_MAX_DISTANCE / sinf((90.f - rangedInaccuracy) * je::pi / 180.f), 5.f);
 		aimer.rotate(0.3f);
 	}
 }
@@ -543,7 +577,7 @@ bool Player::attemptSwingWeapon(float amplifier)
 {
 	if (input.isActionPressed("swing"))
 	{
-		level->addEntity(new Attack(level, *sword, config, 32, amplifier * 35));
+		level->addEntity(new Attack(level, *sword, config, 6 * 4, amplifier * 35));
 		cooldown = 64;
 		return true;
 	}

@@ -66,11 +66,12 @@ void BoneAnimation::addTransformSet(const TransformSet& set)
 
 bool BoneAnimation::isFinished() const
 {
-	return !repeating && frame == lengths.size() - 1;
+	return !repeating && frame == lengths.size() - 1 && frameProgress >= lengths.back();
 }
 
 bool BoneAnimation::advanceFrame()
 {
+	//std::cout << "[ " << frameProgress <<  "/" << lengths[frame] << " ] -- ";
 	if (++frameProgress >= lengths[frame])
 	{
 		if (frame < lengths.size() - 1)
@@ -78,6 +79,7 @@ bool BoneAnimation::advanceFrame()
 			frameProgress -= lengths[frame];
 			++frame;
 			this->transformBones();
+			//std::cout << "[ " << frame + 1 <<  "/" << lengths.size() << " ]\n";
 			return true;
 		}
 		else
@@ -89,10 +91,11 @@ bool BoneAnimation::advanceFrame()
 			}
 			else
 			{
-				frameProgress = 0;
+				frameProgress = lengths.back();
 			}
 		}
 	}
+	//std::cout << "[ " << frame + 1 <<  "/" << lengths.size() << " ]\n";
 	return false;
 }
 
