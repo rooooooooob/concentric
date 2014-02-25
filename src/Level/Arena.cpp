@@ -149,6 +149,13 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 
 void Arena::onUpdate()
 {
+#ifdef JE_DEBUG
+	const bool ctrlHeld = getGame().getInput().isKeyHeld(sf::Keyboard::LControl);
+	if (ctrlHeld && getGame().getInput().isKeyPressed(sf::Keyboard::F9))
+		getGame().setDebugCollisionDrawDetails(!getGame().getDebugCollisionDrawDetails());
+	if (ctrlHeld && getGame().getInput().isKeyPressed(sf::Keyboard::F10))
+		getGame().setDebugCollisionDrawAABB(!getGame().getDebugCollisionDrawAABB());
+#endif
 	std::stringstream ss;
 	ss << "";
 	if (getGame().getFPS() < getGame().getFPSCap() * 0.95)
