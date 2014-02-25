@@ -97,7 +97,7 @@ void Head::onUpdate()
 					const int n = je::randomf(6) + 1;
 					for (int i = 0; i < n; ++i)
 					{
-						level->addEntity(new Blood(level, atk.getPos(), je::lengthdir(je::randomf(360.f), 9 - je::randomf(18))));
+						level->addEntity(new Blood(level, atk.getPos(), je::lengthdir(9 - je::randomf(18), je::randomf(360.f))));
 					}
 					atk.destroy();
 				}

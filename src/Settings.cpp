@@ -29,6 +29,7 @@ void Settings::defaultControlsX360(je::Controller& input)
 	input.setKeybinds("jump", {
 		je::Binds::X360::DPadUp,
 		//je::Binds::X360::LStickUp, //disabled since annoying as fuck
+		je::Binds::X360::A,
 		je::Binds::X360::LB
 	});
 	input.setKeybinds("crouch", {

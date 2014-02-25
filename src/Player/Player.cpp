@@ -539,7 +539,7 @@ bool Player::attemptJumping()
 	return false;
 }
 
-bool Player::attemptSwingWeapon(float amplifier = 1.f)	
+bool Player::attemptSwingWeapon(float amplifier)	
 {
 	if (input.isActionPressed("swing"))
 	{
