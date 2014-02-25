@@ -8,6 +8,7 @@
 #include "jam-engine/Utility/Random.hpp"
 #include "jam-engine/Utility/Trig.hpp"
 
+#include "Level/JumpThroughPlatform.hpp"
 #include "Player/Attack.hpp"
 #include "Player/Blood.hpp"
 #include "Player/Bone.hpp"
@@ -109,6 +110,9 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,sword(new Bone(level, *this, 16, 4, getSwingingArmSprite(config.sword)))
 	,knife(new Bone(level, *this, 8, 3, getThrowingArmSprite(config.thrown)))
 	,rangedInaccuracy(0.f)
+	,jumpThroughFilter([this](const Entity* e)->bool {
+		return ((const JumpThroughPlatform*)e)->isSolid(*this);
+	})
 {
 
 	armAnimations.insert(std::pair<std::string, BoneAnimation>("melee", BoneAnimation(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)));
@@ -210,7 +214,8 @@ void Player::onUpdate()
 
 	//float newY = level->rayCastManually(this, "SolidGround", [](Entity*e)->bool{return true;}, sf::Vector2f(0, veloc.y)).y;
 
-	onGround = level->testCollision(this, "SolidGround", 0, veloc.y + 1);//newY == getPos().y;
+	onGround = level->testCollision(this, "SolidGround", 0, veloc.y + 1) ||
+	           level->testCollision(this, "JumpThroughPlatform", jumpThroughFilter, 0, veloc.y + 1);
 	if (onGround)
 	{
 		if (veloc.y > 0.f)
@@ -478,7 +483,8 @@ bool Player::attemptRunning(float rate)
 
 bool Player::attemptJumping()
 {
-	if (level->testCollision(this, "SolidGround", 0, veloc.y + 1))
+	if (level->testCollision(this, "SolidGround", 0, veloc.y + 1) ||
+		level->testCollision(this, "JumpThroughPlatform", jumpThroughFilter, 0, veloc.y + 1))
 	{
 		if (input.isActionPressed("jump"))
 		{

@@ -87,6 +87,7 @@ private:
 	bool onGround;
 	Bone *arm, *forearm, *sword, *knife;
 	float rangedInaccuracy;
+	std::function<bool(const Entity*)> jumpThroughFilter;
 };
 
 }

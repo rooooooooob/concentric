@@ -11,11 +11,13 @@
 #include "jam-engine/Utility/Random.hpp"
 
 #include "Level/BambooForest.hpp"
+#include "Level/JumpThroughPlatform.hpp"
+#include "Level/Scenery.hpp"
+#include "Level/SolidGround.hpp"
 #include "Player/Player.hpp"
 #include "Player/PlayerConfig.hpp"
-#include "Level/Scenery.hpp"
 #include "Scoreboard.hpp"
-#include "Level/SolidGround.hpp"
+
 
 //#include "PolyTest.hpp"
 //#include <memory>
@@ -58,13 +60,13 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	addEntity(beam);
 	for (int i = 32; i < 164; i += 32)
 	{
-		addEntity(new SolidGround(this, i, groundHeight - 32, sf::Rect<int>(i, groundHeight - 32, 32, 6), "platform.png"));
+		addEntity(new JumpThroughPlatform(this, sf::Vector2f(i, groundHeight - 32)));
 	}
-	addEntity(new SolidGround(this, 0, groundHeight - 96, sf::Rect<int>(0, groundHeight - 96, 32, 6), "platform.png"));
-	addEntity(new SolidGround(this, 32, groundHeight - 96, sf::Rect<int>(32, groundHeight - 96, 32, 6), "platform.png"));
+	addEntity(new JumpThroughPlatform(this, sf::Vector2f(0, groundHeight - 96)));
+	addEntity(new JumpThroughPlatform(this, sf::Vector2f(32, groundHeight - 96)));
 	for (int i = 128; i < 256; i += 32)
 	{
-		addEntity(new SolidGround(this, i, groundHeight - 128, sf::Rect<int>(i, groundHeight - 128, 32, 6), "platform.png"));
+		addEntity(new JumpThroughPlatform(this, sf::Vector2f(i, groundHeight - 128)));
 	}
 
 	int gapSize = getWidth() / (settings.getNumberOfPlayers() + 1);
