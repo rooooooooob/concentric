@@ -121,6 +121,13 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	armAnimations.at("melee").addTransformSet(BoneAnimation::TransformSet(*sword, swordSwingBTsword));
 	armAnimations.at("melee").addTransformSet(BoneAnimation::TransformSet(*knife, swordSwingBTknife));
 
+	armAnimations.insert(std::pair<std::string, BoneAnimation>("sprint_melee", BoneAnimation(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)));
+	
+	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*forearm, swordSwingBTforearm));
+	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*sword, swordSwingBTsword));
+	armAnimations.at("sprint_melee").addTransformSet(BoneAnimation::TransformSet(*knife, swordSwingBTknife));
+
+
 	armAnimations.insert(std::pair<std::string, BoneAnimation>("throw", BoneAnimation(BoneAnimation::TransformSet(*arm, throwKnifeBTarm), 4, false)));
 
 	armAnimations.at("throw").addTransformSet(BoneAnimation::TransformSet(*forearm, throwKnifeBTforearm));
@@ -260,14 +267,25 @@ void Player::onUpdate()
 			currentAnimation = "running";
 			if (!attemptRunning())
 				state = State::Idle;
+			if (input.isActionHeld("sprint"))
+				state = State::Sprinting;
 			if (attemptJumping())
 				state = State::Jumping;
-			if (attemptSwingWeapon())
+			if (attemptSwingWeapon(2.f))
 				state = State::SwingWeapon;
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
 			break;
 		case State::Sprinting://maybe make sprinting later
+			currentAnimation = "running";
+			if (!attemptRunning(2.f))
+				state = State::Idle;
+			if (!input.isActionHeld("sprint"))
+				state = State::Walking;
+			if (attemptJumping())
+				state = State::Leaping;
+			if (attemptSwingWeapon())
+				state = State::SprintSwingWeapon;
 			break;
 		case State::Jumping:
 			currentAnimation = "jumping";
@@ -277,9 +295,29 @@ void Player::onUpdate()
 			if (onGround)
 				state = State::Idle;
 			break;
+		case State::Leaping:
+			currentAnimation = "jumping";
+			attemptRunning(2.f);
+			if (attemptThrowWeapon())
+				state = State::ThrownWeapon;
+			if (onGround)
+				state = State::Idle;
+			break;
 		case State::SwingWeapon:
 			currentArmAnimation = "melee";
 			attemptRunning(0.5);
+			armAnimations.at(currentArmAnimation).advanceFrame();
+			if (armAnimations.at(currentArmAnimation).isFinished())
+			{
+				armAnimations.at(currentArmAnimation).reset();
+				state = State::AttackCooldown;
+			}
+			break;
+		case State::SprintSwingWeapon:
+			involuntaryRunning(2.f);
+			currentArmAnimation = "sprint_melee";
+			aim.x = facing;
+			aim.y = 0.f;
 			armAnimations.at(currentArmAnimation).advanceFrame();
 			if (armAnimations.at(currentArmAnimation).isFinished())
 			{
@@ -309,7 +347,8 @@ void Player::onUpdate()
 				state = State::Idle;
 			break;
 		case State::Decapitated:
-			attemptRunning(1.5f);
+			veloc.x = 4.f * facing;
+			involuntaryRunning(1.5f);
 			level->addEntity(new Blood(level, getPos() + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
 			this->damage(3);//bleedout
 			break;
@@ -362,7 +401,7 @@ void Player::onUpdate()
 			if (atk.getPlayerConfig().team != this->config.team)
 			{
 				this->damage(atk.getDamage(), &atk.getPlayerConfig());
-				const int n = je::randomf(15) + 3;
+				const int n = je::randomf(atk.getDamage() / 1.5f) + 3;
 				for (int i = 0; i < n; ++i)
 				{
 					level->addEntity(new Blood(level, getPos(), je::lengthdir(je::randomf(3 + je::randomf(9)), je::randomf(360)) - sf::Vector2f(0, 2)));
@@ -446,12 +485,10 @@ void Player::reset()
 
 bool Player::attemptRunning(float rate)
 {
-	const float highestWalkableSlopeRatio = 4.f;
-	const int highestWalkableSlope = highestWalkableSlopeRatio * abs(veloc.x);
 	const float horizontalAcceleration = 0.2;
 	const float maxHorizontalSpeed = 2.5 * rate;
 
-	bool moved = false;
+	
 
 	if (input.isActionHeld("move_left") && !input.isActionHeld("move_right"))
 	{
@@ -475,18 +512,8 @@ bool Player::attemptRunning(float rate)
 	}
 	je::limit(veloc.x, -maxHorizontalSpeed, maxHorizontalSpeed);
 	
-	if (veloc.x > 0.1f || veloc.x < -0.1f)
-	{
-		for (int i = 0; i < highestWalkableSlope; ++i)
-		{
-			if (!level->testCollision(this, "SolidGround", veloc.x, -i))
-			{
-				transform().move(veloc.x, -i);
-				moved = true;
-				break;
-			}
-		}
-	}
+	bool moved = involuntaryRunning(rate);
+
 	if (moved)
 	{
 		for (int i = 0; i < abs(veloc.x); ++i)
@@ -512,11 +539,11 @@ bool Player::attemptJumping()
 	return false;
 }
 
-bool Player::attemptSwingWeapon()	
+bool Player::attemptSwingWeapon(float amplifier = 1.f)	
 {
 	if (input.isActionPressed("swing"))
 	{
-		level->addEntity(new Attack(level, *sword, config, 32, 35));
+		level->addEntity(new Attack(level, *sword, config, 32, amplifier * 35));
 		cooldown = 64;
 		return true;
 	}
@@ -529,6 +556,25 @@ bool Player::attemptThrowWeapon()
 	{
 		cooldown = 48;
 		return true;
+	}
+	return false;
+}
+
+bool Player::involuntaryRunning(float rate)
+{
+	const float highestWalkableSlopeRatio = 4.f;
+	const int highestWalkableSlope = highestWalkableSlopeRatio * abs(veloc.x);
+	
+	if (veloc.x > 0.1f || veloc.x < -0.1f)
+	{
+		for (int i = 0; i < highestWalkableSlope; ++i)
+		{
+			if (!level->testCollision(this, "SolidGround", veloc.x, -i))
+			{
+				transform().move(veloc.x, -i);
+				return true;
+			}
+		}
 	}
 	return false;
 }

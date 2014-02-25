@@ -25,8 +25,16 @@ void Settings::defaultControlsX360(je::Controller& input)
 {
 	input.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
 	input.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
-	input.addKeybind("jump", je::Binds::X360::DPadUp);
-	input.addKeybind("jump", je::Binds::X360::LB);
+	input.addKeybind("sprint", je::Binds::X360::B);
+	input.setKeybinds("jump", {
+		je::Binds::X360::DPadUp,
+		//je::Binds::X360::LStickUp, //disabled since annoying as fuck
+		je::Binds::X360::LB
+	});
+	input.setKeybinds("crouch", {
+		je::Binds::X360::DPadDown,
+		je::Binds::X360::LStickDown
+	});
 	input.addKeybind("swing", je::Binds::X360::RT);
 	input.addKeybind("throw", je::Binds::X360::RB);
 
@@ -38,8 +46,12 @@ void Settings::defaultControlsPS3(je::Controller& input)
 {
 	input.addKeybind("move_right", je::Controller::Bind(sf::Joystick::Axis::X));
 	input.addKeybind("move_left", je::Controller::Bind(sf::Joystick::Axis::X, true));
-	input.addKeybind("jump", je::Controller::Bind(4));
-	input.addKeybind("jump", je::Controller::Bind(sf::Joystick::Axis::Y, true));
+	input.addKeybind("sprint", je::Controller::Bind(6)); // I think this is L2? Rebind this to O when you find out what that bind is
+	input.setKeybinds("jump", {
+		je::Controller::Bind(4),
+		je::Controller::Bind(sf::Joystick::Axis::Y, true)
+	});
+	input.addKeybind("crouch", je::Controller::Bind(sf::Joystick::Axis::Y));
 	input.addKeybind("swing", je::Controller::Bind(7));
 	input.addKeybind("throw", je::Controller::Bind(5));
 
@@ -52,7 +64,9 @@ void Settings::defaultControlsPC(je::Controller& input)
 {
 	input.addKeybind("move_left", je::Controller::Bind(sf::Keyboard::Key::A));
 	input.addKeybind("move_right", je::Controller::Bind(sf::Keyboard::Key::D));
+	input.addKeybind("sprint", je::Controller::Bind(sf::Keyboard::Key::LShift));
 	input.addKeybind("jump", je::Controller::Bind(sf::Keyboard::Key::W));
+	input.addKeybind("crouch", je::Controller::Bind(sf::Keyboard::Key::S));
 	input.addKeybind("swing", je::Controller::Bind(sf::Mouse::Button::Left));
 	input.addKeybind("throw", je::Controller::Bind(sf::Mouse::Button::Right));
 

@@ -49,9 +49,11 @@ private:
 
 	bool attemptJumping();
 
-	bool attemptSwingWeapon();
+	bool attemptSwingWeapon(float amplifier = 1.f);
 
 	bool attemptThrowWeapon();
+
+	bool involuntaryRunning(float rate = 1.f);
 
 	enum class State
 	{
@@ -59,7 +61,9 @@ private:
 		Walking,
 		Sprinting,
 		Jumping,
+		Leaping,
 		SwingWeapon,
+		SprintSwingWeapon,
 		ThrownWeapon,
 		Stunned,
 		Decapitated,
