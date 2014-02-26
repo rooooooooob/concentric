@@ -105,15 +105,26 @@ void ThrownWeapon::onUpdate()
 			break;
 	}
 
-	if (!wasBlocked && (level->testCollision(this, "ThrownWeapon") || level->testCollision(this, "Attack")))
+	if (!wasBlocked)
 	{
-		velocity = je::lengthdir(je::randomf(7.f), 50.f + je::randomf(80.f));
-		wasBlocked = true;
+		bool hit = false;
+		const sf::Vector2f newPos(level->rayCastManually(hit, this, {"ThrownWeapon", "Attack"}, [](const Entity* e) {
+			return true; // for now, at least. change if your own attacks don't block shurikens
+		}, velocity));
+		if (hit)
+		{
+			velocity = je::lengthdir(je::randomf(7.f), 50.f + je::randomf(80.f));
+			wasBlocked = true;
+		}
+		transform().setPosition(newPos);
 	}
-
+	else
+	{
+		transform().move(velocity);
+	}
 	sprite.setPosition(getPos());
 	velocity.y += gravity;
-	transform().move(velocity);
+	
 	
 	if (getPos().x < 0 || getPos().x > level->getWidth() || getPos().y < 0 || getPos().y > level->getHeight())
 		this->destroy();
