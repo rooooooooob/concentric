@@ -67,7 +67,10 @@ void Settings::defaultControlsPC(je::Controller& input)
 	input.addKeybind("move_left", je::Controller::Bind(sf::Keyboard::Key::A));
 	input.addKeybind("move_right", je::Controller::Bind(sf::Keyboard::Key::D));
 	input.addKeybind("sprint", je::Controller::Bind(sf::Keyboard::Key::LShift));
-	input.addKeybind("jump", je::Controller::Bind(sf::Keyboard::Key::W));
+	input.setKeybinds("jump", {
+		je::Controller::Bind(sf::Keyboard::Key::W),
+		je::Controller::Bind(sf::Keyboard::Key::Space),
+	});
 	input.addKeybind("crouch", je::Controller::Bind(sf::Keyboard::Key::S));
 	input.addKeybind("swing", je::Controller::Bind(sf::Mouse::Button::Left));
 	input.addKeybind("throw", je::Controller::Bind(sf::Mouse::Button::Right));
@@ -84,7 +87,7 @@ void Settings::addPlayer()
 		PlayerConfig::Thrown::Shuriken,
 		PlayerConfig::Type::Ninja,
 		(int) configs.size(),//default to teams 0,1,2...
-		je::Controller(game.getInput(), configs.size()),//so gamepads get used in order 0,1,2...
+		je::Controller(game.getInput(), configs.size() - 1),//so gamepads get used in order 0,1,2...
 		(int) configs.size()//player ID 0, 1, 2...
 	));
 	if (configs.size() > 1)

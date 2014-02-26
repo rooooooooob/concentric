@@ -211,6 +211,12 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 		sprite.setPosition(getPos());
 		sprite.setOrigin(12, 0);
 	});
+	animations["leaping"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_leaping.png"), 32, 32, 0));
+	animations["leaping"]->apply([&](sf::Sprite& sprite)
+	{
+		sprite.setPosition(getPos());
+		sprite.setOrigin(24, 7);
+	});
 
 	head = new Head(level, getPos().x, getPos().y, *this, scores);
 	level->addEntity(head);
@@ -373,8 +379,8 @@ void Player::onUpdate()
 				state = State::Idle;
 			break;
 		case State::Leaping:
-			currentAnimation = "jumping";
-			attemptRunning(2.f);
+			currentAnimation = "leaping";
+			involuntaryRunning(2.f * facing);
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
 			if (onGround)
@@ -446,6 +452,10 @@ void Player::onUpdate()
 				state = State::Idle;
 			break;
 		case State::Decapitated:
+			if (input.isActionPressed("move_right"))
+				facing = Right;
+			if (input.isActionPressed("move_left"))
+				facing = Left;
 			veloc.x = 3.f * facing;
 			involuntaryRunning(1.5f);
 			if (cooldown <= 1)
