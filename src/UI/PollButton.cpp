@@ -1,6 +1,8 @@
 #include "UI/PollButton.hpp"
 #include <iostream>
 
+const int ACTIONS = 8;
+
 namespace con
 {
 
@@ -14,20 +16,21 @@ PollButton::PollButton(const sf::Vector2f &pos, const sf::Vector2f &dimensions, 
 
 void PollButton::update()
 {
-	if (input.isButtonReleased (sf::Mouse::Button::Left) && (sf::FloatRect (pos, dimensions).contains(level->getCursorPos())))
+	if (input.isButtonPressed(sf::Mouse::Button::Left) && (sf::FloatRect(pos, dimensions).contains(level->getCursorPos())))
 	{
 		onClick(this);
 	}
-
-    if (polling)
+	else if (polling)
 	{
-		std::string actions [6] = {
+		std::string actions[ACTIONS] = {
+			"swing",
+			"thrust",
+			"throw",
 			"jump",
 			"crouch",
+			"sprint",
 			"move_right",
 			"move_left",
-			"swing",
-			"throw"
 		};
 		
 		unsigned int joyID;
@@ -36,7 +39,7 @@ void PollButton::update()
 			config.controller.setJoystickID(joyID);
 		}
 		
-		if (pollPos < 5)
+		if (pollPos < ACTIONS)
 		{
 			label = actions[pollPos];
 			je::Controller::Bind b(config.controller.getLastInputAsBind());
@@ -49,7 +52,7 @@ void PollButton::update()
 				++pollPos;
 			}
 		}
-		else if (pollPos == 5)
+		else if (pollPos == ACTIONS)
 		{
 			label = "Aim right (left click for mouse aim)";
 			je::Controller::AxisBind bind(config.controller.getLastAxisMovementAsBind());
@@ -64,7 +67,7 @@ void PollButton::update()
 				++pollPos;
 			}
 		}
-		else if (pollPos == 6)
+		else if (pollPos == ACTIONS + 1)
 		{
 			label = "Aim Down (left click for mouse aim)";
 			je::Controller::AxisBind bind(config.controller.getLastAxisMovementAsBind());

@@ -62,11 +62,11 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	{
 		addEntity(new JumpThroughPlatform(this, sf::Vector2f(i, groundHeight - 32)));
 	}
-	addEntity(new JumpThroughPlatform(this, sf::Vector2f(0, groundHeight - 96)));
-	addEntity(new JumpThroughPlatform(this, sf::Vector2f(32, groundHeight - 96)));
+	addEntity(new JumpThroughPlatform(this, sf::Vector2f(0, groundHeight - 88)));
+	addEntity(new JumpThroughPlatform(this, sf::Vector2f(32, groundHeight - 88)));
 	for (int i = 128; i < 256; i += 32)
 	{
-		addEntity(new JumpThroughPlatform(this, sf::Vector2f(i, groundHeight - 128)));
+		addEntity(new JumpThroughPlatform(this, sf::Vector2f(i - 16, groundHeight - 128)));
 	}
 
 	int gapSize = getWidth() / (settings.getNumberOfPlayers() + 1);
@@ -90,22 +90,22 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	this->addEntity(castle);
 
 	//	forest time!
-	const float totalDensity = 0.85f;
-	const float sideDensity = totalDensity / 4.f;
-	const float backDensity = totalDensity - sideDensity;
-	const int frontForestWidth = 164;
-	//	add background forest
-	addEntity(new BambooForest(this, sf::Vector2f(0, groundHeight), this->getWidth(), totalDensity));
-	//	and one to make up for the frontal side forests (to keep uniform tree density across map)
-	addEntity(new BambooForest(this, sf::Vector2f(frontForestWidth, groundHeight), this->getWidth() - frontForestWidth * 2, sideDensity));
+	//const float totalDensity = 0.85f;
+	//const float sideDensity = totalDensity / 4.f;
+	//const float backDensity = totalDensity - sideDensity;
+	//const int frontForestWidth = 164;
+	////	add background forest
+	//addEntity(new BambooForest(this, sf::Vector2f(0, groundHeight), this->getWidth(), totalDensity));
+	////	and one to make up for the frontal side forests (to keep uniform tree density across map)
+	//addEntity(new BambooForest(this, sf::Vector2f(frontForestWidth, groundHeight), this->getWidth() - frontForestWidth * 2, sideDensity));
 
-	//	and the two frontal forests
-	BambooForest *frontForest = new BambooForest(this, sf::Vector2f(0, groundHeight), frontForestWidth, sideDensity);
-	frontForest->setDepth(-9);	//	behind grass and land, in front of rest
-	this->addEntity(frontForest);
-	frontForest = new BambooForest(this, sf::Vector2f(getWidth() - frontForestWidth, groundHeight), frontForestWidth, sideDensity);
-	frontForest->setDepth(-9);	//	behind grass and land, in front of rest
-	this->addEntity(frontForest);
+	////	and the two frontal forests
+	//BambooForest *frontForest = new BambooForest(this, sf::Vector2f(0, groundHeight), frontForestWidth, sideDensity);
+	//frontForest->setDepth(-9);	//	behind grass and land, in front of rest
+	//this->addEntity(frontForest);
+	//frontForest = new BambooForest(this, sf::Vector2f(getWidth() - frontForestWidth, groundHeight), frontForestWidth, sideDensity);
+	//frontForest->setDepth(-9);	//	behind grass and land, in front of rest
+	//this->addEntity(frontForest);
 
 	//	init all score text crap (jesus christ max why would you recreate this every frame?)
 	if (!font.loadFromFile ("resources/DOMOAN__.ttf"))

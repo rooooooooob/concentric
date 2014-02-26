@@ -1,7 +1,7 @@
 #include "Settings.hpp"
 
 #include "jam-engine/Core/GamepadPredefs.hpp"
-
+#include "jam-engine/Utility/Random.hpp"
 namespace con
 {
 
@@ -84,7 +84,7 @@ void Settings::addPlayer()
 		PlayerConfig::Thrown::Shuriken,
 		PlayerConfig::Type::Ninja,
 		(int) configs.size(),//default to teams 0,1,2...
-		je::Controller(game.getInput(), configs.size() - 1),//so gamepads get used in order 0,1,2...
+		je::Controller(game.getInput(), configs.size()),//so gamepads get used in order 0,1,2...
 		(int) configs.size()//player ID 0, 1, 2...
 	));
 	if (configs.size() > 1)
@@ -97,6 +97,9 @@ void Settings::addPlayer()
 		defaultControlsPC(configs.back().controller);
 		configs.back().type = PlayerConfig::Type::Samurai;
 	}
+	//defaultControlsX360(configs.back().controller);
+	//configs.back().type = je::choose({PlayerConfig::Type::Samurai, PlayerConfig::Type::Ninja});
+	//configs.back().thrown = je::choose({PlayerConfig::Thrown::Shuriken, PlayerConfig::Thrown::Knife});
 }
 
 void Settings::removePlayer()

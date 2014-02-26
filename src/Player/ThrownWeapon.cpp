@@ -49,13 +49,13 @@ ThrownWeapon::ThrownWeapon(je::Level *level, const sf::Vector2f& pos, const Play
 			sprite.setTexture(texMan.get("shuriken.png"));
 			sprite.setOrigin(4, 4);
 			gravity = 0.3;
-			damage = 10;
+			damage = 15;
 			break;
 		case PlayerConfig::Thrown::Knife:
 			sprite.setTexture(texMan.get("knife.png"));
 			sprite.setOrigin(3, 2);
 			gravity = 0.1;
-			damage = 10;
+			damage = 12;
 			break;
 	}
 	sprite.setPosition(pos);
