@@ -21,8 +21,8 @@ namespace con
 {
 
 class Head;
-
 class Bone;
+class GrapplingHook;
 
 class Player : public je::Entity
 {
@@ -94,7 +94,7 @@ private:
 	Head *head;
 	float health;
 	float maxhealth;
-	sf::Vector2f veloc;
+public:sf::Vector2f veloc;private:
 	bool onGround;
 	Bone *arm, *forearm, *sword, *knife;
 	float rangedInaccuracy;
@@ -105,8 +105,9 @@ private:
 	int bigweaponcooldown;
 	sf::RectangleShape hpbarback;
 	sf::RectangleShape hpbarfront;
+	GrapplingHook *hook;
 };
 
-}
+} // con
 
 #endif
