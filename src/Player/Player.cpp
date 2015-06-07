@@ -9,6 +9,7 @@
 #include "jam-engine/Utility/Trig.hpp"
 
 #include "Level/JumpThroughPlatform.hpp"
+#include "Level/Powerup.hpp"
 #include "Player/Attack.hpp"
 #include "Player/Blood.hpp"
 #include "Player/Bone.hpp"
@@ -172,6 +173,10 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,jumpThroughFilter([this](const Entity* e)->bool {
 		return ((const JumpThroughPlatform*)e)->isSolid(*this);
 	})
+	,threeshotcooldown(0)
+	,bigweaponcooldown(0)
+	,hpbarback(sf::Vector2f(32, 3))
+	,hpbarfront(sf::Vector2f(32, 3))
 {
 
 	armAnimations.insert(std::pair<std::string, BoneAnimation>("melee", BoneAnimation(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)));
@@ -245,6 +250,14 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	{
 		crosshair[i].setRotation(360.f * i / size);
 	}
+
+	hpbarback.setFillColor(sf::Color::Black);
+	hpbarback.setOutlineColor(sf::Color::White);
+	hpbarback.setOutlineThickness(1);
+	hpbarback.setOrigin(16, 0);
+
+	hpbarfront.setFillColor(sf::Color::Red);
+	hpbarfront.setOrigin(16, 0);
 }
 
 Player::Facing Player::getFacing() const
@@ -282,10 +295,34 @@ void Player::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 		it->second->draw(target, states);
 	for (const sf::Sprite& aimer : crosshair)
 		target.draw(aimer, states);
+
+	target.draw(hpbarback);
+	target.draw(hpbarfront);
 }
 
 void Player::onUpdate()
 {
+	if (threeshotcooldown > 0)
+		--threeshotcooldown;
+	if (bigweaponcooldown > 0)
+		--bigweaponcooldown;
+	Powerup *powerup = static_cast<Powerup*>(level->testCollision(this, "Powerup"));
+	if (powerup)
+	{
+		switch (powerup->getType())
+		{
+		case Powerup::Type::ThreeShot:
+			threeshotcooldown += 300;
+			break;
+		case Powerup::Type::Health:
+			health += 100;
+			break;
+		case Powerup::Type::BigWeapon:
+			bigweaponcooldown += 900;
+			break;
+		}
+		powerup->destroy();	
+	}
 	//std::cout << "hp: " << health << " / " << maxhealth << std::endl;
 	const sf::Vector2f newAim(input.axisPos("aim_x", getPos().x, level), input.axisPos("aim_y", getPos().y, level));
 	if (je::length(newAim) > 0.1f)
@@ -375,16 +412,41 @@ void Player::onUpdate()
 				state = State::ThrustWeapon;
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
+			if (attemptThrustWeapon())
+				state = State::SprintThrustWeapon;
+			if (attemptSwingWeapon())
+				state = State::SprintSwingWeapon;
+			if (input.isActionHeld("crouch"))
+			{
+				state = State::DownwardThrust;
+				atk = new Attack(level, *sword, config, 9999, 135);
+				level->addEntity(atk);
+			}
 			if (onGround)
 				state = State::Idle;
 			break;
 		case State::Leaping:
-			currentAnimation = "leaping";
+			//currentAnimation = "leaping";
+			//animations.at(currentAnimation)->setRotation(90.f - je::direction(veloc));
+			//head->transform().setRotation(90.f - je::direction(veloc));
 			involuntaryRunning(2.f * facing);
 			if (attemptThrowWeapon())
 				state = State::ThrownWeapon;
+			if (attemptThrustWeapon())
+				state = State::SprintThrustWeapon;
+			if (attemptSwingWeapon())
+				state = State::SprintSwingWeapon;
+			if (input.isActionHeld("crouch"))
+			{
+				state = State::DownwardThrust;
+				atk = new Attack(level, *sword, config, 9999, 135);
+				level->addEntity(atk);
+			}
 			if (onGround)
+			{
 				state = State::Idle;
+				//animations.at(currentAnimation)->setRotation(0.f);
+			}
 			break;
 		case State::SwingWeapon:
 			currentArmAnimation = "melee";
@@ -438,12 +500,26 @@ void Player::onUpdate()
 				armAnimations.at(currentArmAnimation).reset();
 				state = State::Jumping;
 			}
+			if (threeshotcooldown > 0)
+				armAnimations.at(currentArmAnimation).advanceFrame();
 			armAnimations.at(currentArmAnimation).advanceFrame();
-			if (cooldown == 32)
+			if (cooldown == (threeshotcooldown > 0 ? 16 : 32))
 			{
-				float variance = 2.f * je::randomf(rangedInaccuracy) - rangedInaccuracy;
-				sf::Vector2f projectileVelocity(je::lengthdir(je::length(aim) * 12.f, je::direction(aim) + variance));
-				level->addEntity(new ThrownWeapon(level, getPos() + je::lengthdir(12, armAngle + variance), config, projectileVelocity));
+				if (threeshotcooldown == 0)
+				{
+					float variance = 2.f * je::randomf(rangedInaccuracy) - rangedInaccuracy;
+					sf::Vector2f projectileVelocity(je::lengthdir(je::length(aim) * 12.f, je::direction(aim) + variance));
+					level->addEntity(new ThrownWeapon(level, getPos() + je::lengthdir(12, armAngle + variance), config, projectileVelocity));
+				}
+				else
+				{
+					for (int i = -1; i < 2; ++i)
+					{
+						const int variance = 15 * i;
+						sf::Vector2f projectileVelocity(je::lengthdir(je::length(aim) * 12.f, je::direction(aim) + variance));
+						level->addEntity(new ThrownWeapon(level, getPos() + je::lengthdir(12, armAngle + 2 * variance), config, projectileVelocity));
+					}
+				}
 				state = State::AttackCooldown;
 			}
 			break;
@@ -462,7 +538,7 @@ void Player::onUpdate()
 				attemptThrowWeapon();
 			if (cooldown <= 1)
 				attemptSwingWeapon();
-			if (cooldown <= 1)
+			if (cooldown <= 1) 
 				attemptThrustWeapon();
 			level->addEntity(new Blood(level, getPos() + sf::Vector2f(0, -4), sf::Vector2f(-3 + je::randomf(6), -je::randomf(16))));
 			this->damage(2);//bleedout
@@ -474,6 +550,17 @@ void Player::onUpdate()
 			{
 				armAnimations.at(currentArmAnimation).reset();
 				state = State::Idle;
+			}
+			break;
+		case State::DownwardThrust:
+			veloc.y += 0.3;
+			currentArmAnimation = "thrust";
+			aim.x = facing * 0.1;
+			aim.y = 1;
+			if (onGround)
+			{
+				state = State::Idle;
+				atk->destroy();
 			}
 			break;
 		default:
@@ -550,9 +637,16 @@ void Player::onUpdate()
 	}
 	armAngle = je::direction(aim);
 
+
 	armAnimations.at(currentArmAnimation).transformBones();
 
 	armAnimations.at(currentArmAnimation).scaleRotations(facing);
+
+
+	if (bigweaponcooldown > 0 && sword->boneTransform().getScale().x != 0.f)
+	{
+		sword->boneTransform().setScale(2.f, 2.f);
+	}
 
 	sf::Transformable& transform = arm->boneTransform();
 
@@ -581,6 +675,13 @@ void Player::onUpdate()
 		aimer.setOrigin(sinf(rangedInaccuracy * je::pi / 180.f) * AIMER_MAX_DISTANCE / sinf((90.f - rangedInaccuracy) * je::pi / 180.f), 5.f);
 		aimer.rotate(0.3f);
 	}
+
+
+
+	hpbarback.setPosition(getPos().x, getPos().y - 64);
+	hpbarback.setSize(sf::Vector2f(health > maxhealth ? health / 100.f * 32 : 32, hpbarback.getSize().y));
+	hpbarfront.setPosition(getPos().x, getPos().y - 64);
+	hpbarfront.setSize(sf::Vector2f(health / 100.f * 32, hpbarfront.getSize().y));
 }
 
 void Player::reset()
@@ -600,6 +701,8 @@ void Player::reset()
 
 bool Player::attemptRunning(float rate)
 {
+	if (bigweaponcooldown > 0)
+		rate *= 1.15;
 	const float horizontalAcceleration = 0.2;
 	const float maxHorizontalSpeed = 2 * rate;
 
@@ -656,6 +759,8 @@ bool Player::attemptJumping()
 
 bool Player::attemptSwingWeapon(float amplifier)	
 {
+	if (bigweaponcooldown > 0)
+		amplifier *= 1.75;
 	if (input.isActionPressed("swing"))
 	{
 		level->addEntity(new Attack(level, *sword, config, 6 * 4, amplifier * 35));
@@ -667,6 +772,8 @@ bool Player::attemptSwingWeapon(float amplifier)
 
 bool Player::attemptThrustWeapon(float amplifier)	
 {
+	if (bigweaponcooldown > 0)
+		amplifier *= 2;
 	if (input.isActionPressed("thrust"))
 	{
 		level->addEntity(new Attack(level, *sword, config, 5 * 4, amplifier * 25));
@@ -680,7 +787,7 @@ bool Player::attemptThrowWeapon()
 {
 	if (input.isActionHeld("throw"))
 	{
-		cooldown = 48;
+		cooldown = (threeshotcooldown > 0 ? 20 : 48);
 		return true;
 	}
 	return false;

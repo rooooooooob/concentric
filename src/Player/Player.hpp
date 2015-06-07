@@ -5,6 +5,8 @@
 #include <string>
 #include <memory>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+
 #include "jam-engine/Core/Entity.hpp"
 #include "jam-engine/Graphics/Animation.hpp"
 #include "jam-engine/Core/Controller.hpp"
@@ -71,7 +73,8 @@ private:
 		ThrownWeapon,
 		Stunned,
 		Decapitated,
-		AttackCooldown
+		AttackCooldown,
+		DownwardThrust
 	};
 
 
@@ -96,6 +99,12 @@ private:
 	Bone *arm, *forearm, *sword, *knife;
 	float rangedInaccuracy;
 	std::function<bool(const Entity*)> jumpThroughFilter;
+
+	Entity *atk;
+	int threeshotcooldown;
+	int bigweaponcooldown;
+	sf::RectangleShape hpbarback;
+	sf::RectangleShape hpbarfront;
 };
 
 }

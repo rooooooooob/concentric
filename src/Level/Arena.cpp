@@ -12,6 +12,7 @@
 
 #include "Level/BambooForest.hpp"
 #include "Level/JumpThroughPlatform.hpp"
+#include "Level/Powerup.hpp"
 #include "Level/Scenery.hpp"
 #include "Level/SolidGround.hpp"
 #include "Player/Player.hpp"
@@ -160,6 +161,11 @@ void Arena::drawGUI(sf::RenderTarget& target) const
 
 void Arena::onUpdate()
 {
+	if (je::random(400) == 9)
+	{
+		Powerup::Type type = je::choose({Powerup::Type::Health, Powerup::Type::BigWeapon, Powerup::Type::ThreeShot});
+		addEntity(new Powerup(this, sf::Vector2f(32 + je::random(getWidth() - 64), 32), type));
+	}
 #ifdef JE_DEBUG
 	const bool ctrlHeld = getGame().getInput().isKeyHeld(sf::Keyboard::LControl);
 	if (ctrlHeld && getGame().getInput().isKeyPressed(sf::Keyboard::F9))
