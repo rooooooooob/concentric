@@ -2,10 +2,11 @@
 #define CON_THROWNWEAPON_HPP
 
 #include "jam-engine/Core/Entity.hpp"
-#include "Player/PlayerConfig.hpp"
 
 namespace con
 {
+
+struct PlayerConfig;
 
 class ThrownWeapon : public je::Entity
 {

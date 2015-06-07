@@ -7,6 +7,8 @@
 #include "jam-engine/Utility/Random.hpp"
 #include "jam-engine/Utility/Trig.hpp"
 
+#include "Player/PlayerConfig.hpp"
+
 namespace con
 {
 
@@ -29,6 +31,7 @@ static je::DetailedMask::MaskRef getThrownMask(PlayerConfig::Thrown type, je::Le
 		case PlayerConfig::Thrown::Shuriken:
 			return level->getGame().masks().create("Shuriken");
 	}
+	return nullptr;
 }
 
 

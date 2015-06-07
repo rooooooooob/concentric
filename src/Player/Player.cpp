@@ -15,6 +15,7 @@
 #include "Player/Bone.hpp"
 #include "Player/Head.hpp"
 #include "Player/Heart.hpp"
+#include "Player/GrapplingHook.hpp"
 #include "Player/PlayerResources.hpp"
 #include "Player/ThrownWeapon.hpp"
 
@@ -177,6 +178,7 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,bigweaponcooldown(0)
 	,hpbarback(sf::Vector2f(32, 3))
 	,hpbarfront(sf::Vector2f(32, 3))
+	,hook(nullptr)
 {
 
 	armAnimations.insert(std::pair<std::string, BoneAnimation>("melee", BoneAnimation(BoneAnimation::TransformSet(*arm, swordSwingBTarm), 6, false)));
@@ -330,7 +332,7 @@ void Player::onUpdate()
 
 	//float newY = level->rayCastManually(this, "SolidGround", [](Entity*e)->bool{return true;}, sf::Vector2f(0, veloc.y)).y;
 
-	const bool jumpThroughBelow = level->testCollision(this, "JumpThroughPlatform", jumpThroughFilter, 0, veloc.y + 1);
+	const bool jumpThroughBelow = (level->testCollision(this, "JumpThroughPlatform", jumpThroughFilter, 0, veloc.y + 1) != nullptr);
 
 	onGround = jumpThroughBelow || level->testCollision(this, "SolidGround", 0, veloc.y + 1);
 	
@@ -340,6 +342,34 @@ void Player::onUpdate()
 		onGround = false;
 	}
 	
+	bool retractingHook = false;
+	if (hook)
+	{
+		if (input.isActionHeld("grappling"))
+		{
+			if (hook->pullIn())
+			{
+				hook->destroy();
+				hook = nullptr;
+			}
+			retractingHook = true;
+		}
+		if (input.isActionReleased("grappling"))
+		{
+			hook->destroy();
+			hook = nullptr;
+		}
+	}
+	else
+	{
+		if (input.isActionReleased("grappling"))
+		{
+			sf::Vector2f projectileVelocity(je::lengthdir(je::length(aim) * 12.f, je::direction(aim)));
+			hook = new GrapplingHook(*this, getPos(), projectileVelocity);
+			level->addEntity(hook);
+		}
+	}
+
 	if (onGround)
 	{
 		if (veloc.y > 0.f)
@@ -347,6 +377,10 @@ void Player::onUpdate()
 			//transform().setPosition(prevPos);
 			veloc.y = 0.f;
 		}
+	}
+	else if (retractingHook)
+	{
+		// nothing
 	}
 	else
 	{

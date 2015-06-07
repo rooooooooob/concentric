@@ -39,6 +39,7 @@ void Settings::defaultControlsX360(je::Controller& input)
 	input.addKeybind("swing", je::Binds::X360::RT);
 	input.addKeybind("throw", je::Binds::X360::RB);
 	input.addKeybind("thrust", je::Binds::X360::LT);
+	input.addKeybind("grappling", je::Binds::X360::X);
 
 	input.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::U));
 	input.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
@@ -56,6 +57,7 @@ void Settings::defaultControlsPS3(je::Controller& input)
 	input.addKeybind("crouch", je::Controller::Bind(sf::Joystick::Axis::Y));
 	input.addKeybind("swing", je::Controller::Bind(7));
 	input.addKeybind("throw", je::Controller::Bind(5));
+	input.addKeybind("grappling", je::Controller::Bind(sf::Keyboard::Key::G));
 
 	input.setAxis("aim_x", je::Controller::AxisBind(sf::Joystick::Axis::Z));
 	input.setAxis("aim_y", je::Controller::AxisBind(sf::Joystick::Axis::R));
@@ -75,6 +77,7 @@ void Settings::defaultControlsPC(je::Controller& input)
 	input.addKeybind("swing", je::Controller::Bind(sf::Mouse::Button::Left));
 	input.addKeybind("throw", je::Controller::Bind(sf::Mouse::Button::Right));
 	input.addKeybind("thrust", je::Controller::Bind(sf::Keyboard::Key::Q));
+	input.addKeybind("grappling", je::Controller::Bind(sf::Keyboard::Key::G));
 
 	input.setAxis("aim_x", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::X, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
 	input.setAxis("aim_y", je::Controller::AxisBind(je::Controller::AxisBind::MouseAxis::Y, false, je::Controller::AxisBind::Interval(-128, 128), nullptr));
