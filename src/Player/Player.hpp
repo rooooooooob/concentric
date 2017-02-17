@@ -98,7 +98,7 @@ public:sf::Vector2f veloc;private:
 	bool onGround;
 	Bone *arm, *forearm, *sword, *knife;
 	float rangedInaccuracy;
-	std::function<bool(const Entity*)> jumpThroughFilter;
+	std::function<bool(const Entity&)> jumpThroughFilter;
 
 	Entity *atk;
 	int threeshotcooldown;

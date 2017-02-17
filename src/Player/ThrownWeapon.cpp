@@ -111,7 +111,7 @@ void ThrownWeapon::onUpdate()
 	if (!wasBlocked)
 	{
 		bool hit = false;
-		const sf::Vector2f newPos(level->rayCastManually(hit, this, {"ThrownWeapon", "Attack"}, [](const Entity* e) {
+		const sf::Vector2f newPos(level->rayCastManually(hit, this, {"ThrownWeapon", "Attack"}, [](const Entity& e) {
 			return true; // for now, at least. change if your own attacks don't block shurikens
 		}, velocity));
 		if (hit)

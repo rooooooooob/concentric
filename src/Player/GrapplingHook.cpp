@@ -32,7 +32,7 @@ bool GrapplingHook::pullIn()
 	if (stuck)
 	{
 		bool hit;
-		player.veloc = level->rayCastManually(hit, &player, {"SolidGround"}, [](const je::Entity*)->bool{return true;}, je::lengthdir(5, je::pointDirection(player.getPos(), getPos()))) - player.getPos();
+		player.veloc = level->rayCastManually(hit, &player, {"SolidGround"},[](const je::Entity&)->bool{return true;}, je::lengthdir(5, je::pointDirection(player.getPos(), getPos()))) - player.getPos();
 		//player.transform().setPosition();
 	}
 	else
@@ -58,7 +58,7 @@ void GrapplingHook::onUpdate()
 		gravity += 0.003f;
 		
 		bool hit = false;
-		const sf::Vector2f newPos(level->rayCastManually(hit, this, {"ThrownWeapon", "Attack"}, [](const Entity* e) {
+		const sf::Vector2f newPos(level->rayCastManually(hit, this, {"ThrownWeapon", "Attack"}, [](const Entity& e) {
 			return true; // for now, at least. change if your own attacks don't block shurikens
 		}, velocity));
 		if (hit)

@@ -171,8 +171,8 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	,sword(new Bone(level, *this, 16, 4, getSwingingArmSprite(config.sword)))
 	,knife(new Bone(level, *this, 8, 3, getThrowingArmSprite(config.thrown)))
 	,rangedInaccuracy(0.f)
-	,jumpThroughFilter([this](const Entity* e)->bool {
-		return ((const JumpThroughPlatform*)e)->isSolid(*this);
+	,jumpThroughFilter([this](const Entity& e) -> bool {
+		return ((const JumpThroughPlatform&)e).isSolid(*this);
 	})
 	,threeshotcooldown(0)
 	,bigweaponcooldown(0)
@@ -207,23 +207,14 @@ Player::Player(je::Level *level, int x, int y, const PlayerConfig& config, Score
 	armAnimations.at("throw").addTransformSet(BoneAnimation::TransformSet(*knife, throwKnifeBTknife));
 
 	animations["running"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_running.png"), 24, 24, RUNNING_ANIM_TIME));
-	animations["running"]->apply([&](sf::Sprite& sprite)
-	{
-		sprite.setPosition(getPos());
-		sprite.setOrigin(12, 0);
-	});
+	animations["running"]->setPosition(getPos());
+	animations["running"]->setOrigin(12, 0);
 	animations["jumping"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_jumping.png"), 24, 24, 0));
-	animations["jumping"]->apply([&](sf::Sprite& sprite)
-	{
-		sprite.setPosition(getPos());
-		sprite.setOrigin(12, 0);
-	});
+	animations["jumping"]->setPosition(getPos());
+	animations["jumping"]->setOrigin(12, 0);
 	animations["leaping"].reset(new je::Animation(level->getGame().getTexManager().get(getClassPrefix(config.type) + "_leaping.png"), 32, 32, 0));
-	animations["leaping"]->apply([&](sf::Sprite& sprite)
-	{
-		sprite.setPosition(getPos());
-		sprite.setOrigin(24, 7);
-	});
+	animations["leaping"]->setPosition(getPos());
+	animations["leaping"]->setOrigin(24, 7);
 
 	head = new Head(level, getPos().x, getPos().y, *this, scores);
 	level->addEntity(head);
@@ -308,7 +299,7 @@ void Player::onUpdate()
 		--threeshotcooldown;
 	if (bigweaponcooldown > 0)
 		--bigweaponcooldown;
-	Powerup *powerup = static_cast<Powerup*>(level->testCollision(this, "Powerup"));
+	je::Ref<Powerup> powerup = static_cast<je::Ref<Powerup>>(level->testCollision(this, "Powerup"));
 	if (powerup)
 	{
 		switch (powerup->getType())
@@ -607,7 +598,7 @@ void Player::onUpdate()
 
 	//	now check for pointy things stabbing you
 	{
-		std::vector<Entity*> thrownWeapons;
+		std::vector<je::Ref<Entity>> thrownWeapons;
 		level->findCollisions(thrownWeapons, this, "ThrownWeapon");
 		for (je::Entity *entity : thrownWeapons)
 		{
@@ -629,7 +620,7 @@ void Player::onUpdate()
 		}
 	}
 	{
-		std::vector<Entity*> attacks;
+		std::vector<je::Ref<Entity>> attacks;
 		level->findCollisions(attacks, this, "Attack");
 		for (je::Entity *entity : attacks)
 		{
@@ -663,11 +654,8 @@ void Player::onUpdate()
 	auto bodyAnim = animations.find(currentAnimation);
 	if (bodyAnim != animations.end())
 	{
-		bodyAnim->second->apply([&](sf::Sprite& sprite)
-		{
-			sprite.setPosition(getPos());
-			sprite.setScale(facing, 1);
-		});
+		bodyAnim->second->setPosition(getPos());
+		bodyAnim->second->setScale(facing, 1);
 	}
 	armAngle = je::direction(aim);
 

@@ -56,7 +56,7 @@ void Head::onUpdate()
 	{
 		case State::Capitated:
 		{
-			std::vector<Entity*> collisionResults;
+			std::vector<je::Ref<Entity>> collisionResults;
 			level->findCollisions(collisionResults, this, "ThrownWeapon");
 			for (je::Entity *entity : collisionResults)
 			{

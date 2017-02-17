@@ -127,7 +127,7 @@ Arena::Arena(je::Game *game, const Settings& settings)
 	{
 		scoreText.setFont(font);
 		scoreText.setCharacterSize(20);
-		scoreText.setColor(sf::Color::White);
+		scoreText.setFillColor(sf::Color::White);
 	}
 
 	//	make sure players are updated before heads and bones (or else the heads lag behind)
